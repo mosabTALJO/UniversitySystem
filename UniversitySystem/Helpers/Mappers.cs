@@ -14,6 +14,9 @@ namespace UniversitySystem.Helpers
 
             CreateMap<SemesterCourseTeacher, SemesterCourseTeacherVM>().ReverseMap();
 
+            CreateMap<DepartmentStudent, DepartmentStudentVM>().ForMember(dest => dest.SupervisorName, opt => opt.MapFrom(src => src.Supervisor.FirstName + " " + src.Supervisor.LastName))
+                                                               .ForMember(dest => dest.StudentFirstName , opt => opt.MapFrom(src => src.Student.FirstName)).ReverseMap();
+
             CreateMap<Course, CourseVM>().ReverseMap();
         }
     }
