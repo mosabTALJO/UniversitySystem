@@ -20,7 +20,7 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet ("{DepId}/{year}")]
+        [HttpGet ("{DepId}")]
         public async Task<ActionResult<List<DepartmentStudentVM>>> Get(int DepId, int? year = null)
         {
             return await _context.DepartmentStudents.ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId && x.Year == year).ToListAsync();
