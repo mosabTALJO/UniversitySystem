@@ -13,6 +13,8 @@ namespace UniversitySystem.Helpers
             CreateMap<WeekProgram, WeekProgramVM>().ReverseMap();
 
             CreateMap<SemesterCourseTeacher, SemesterCourseTeacherVM>().ReverseMap();
+
+            CreateMap<Course, CourseVM>().ReverseMap();
         }
     }
 }
