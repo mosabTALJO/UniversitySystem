@@ -17,7 +17,7 @@ namespace UniversitySystem.Data
         public DbSet<Course> Courses { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<DepartmentSemesterCourse> DepartmentSemesterCourses { get; set; }
-        public DbSet<DepartmentStudentVM> DepartmentStudents { get; set; }
+        public DbSet<DepartmentStudent> DepartmentStudents { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<ManagementStaff> ManagementStaffs { get; set; }
         public DbSet<Salary> Salaries { get; set; }
