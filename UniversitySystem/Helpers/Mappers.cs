@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Linq;
 using UniversitySystem.Models;
 using UniversitySystem.ViewModels;
 
@@ -18,6 +19,21 @@ namespace UniversitySystem.Helpers
                                                                .ForMember(dest => dest.StudentFirstName , opt => opt.MapFrom(src => src.Student.FirstName)).ReverseMap();
 
             CreateMap<Course, CourseVM>().ReverseMap();
+
+            CreateMap<Employee, EmployeeVM>().ForMember(dest => dest.SupervisedStudents , opt => opt.MapFrom(src => src.SupervisedStudent.StudentId)).ReverseMap();
+
+            CreateMap<Salary, SalaryVM>().ForMember(dest => dest.ManagementStaffs , opt => opt.MapFrom(src => src.Empolyee.EmployeeId)).ReverseMap();
+
+            CreateMap<Teacher, TeacherVM>().ForMember(dest => dest.SemesterCourseTeachers , opt => opt.MapFrom(src => src.SemesterCourseTeachers)).ReverseMap(); // we may have some problems here 
+
+            CreateMap<Student, StudentVM>().ForMember(dest => dest.Department , opt => opt.MapFrom( src => src.DepartmentStudents)).ReverseMap(); // and here " baisecly i fucked up "
+        
+            CreateMap<ManagementStaff, ManagementStaffVM>().ReverseMap();
+        
+        
+        
+        
+        
         }
     }
 }
