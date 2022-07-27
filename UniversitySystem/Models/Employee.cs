@@ -8,7 +8,7 @@
         public string Address { get; set; }
         public string Email { get; set; }
         public long PhoneNumber { get; set; }
-        public virtual DepartmentStudent SupervisedStudent { get; set; }
+        //public virtual DepartmentStudent SupervisedStudent { get; set; }
         public virtual ICollection<ManagementStaff> ManagementStaffs { get; set; }
         public virtual ICollection<Teacher> Teachers { get; set; }
         public virtual ICollection<DepartmentStudent> DepartmentStudents { get; set; }

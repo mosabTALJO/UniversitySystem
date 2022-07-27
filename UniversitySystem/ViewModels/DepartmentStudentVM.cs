@@ -1,9 +1,11 @@
 ﻿namespace UniversitySystem.ViewModels
 {
     public class DepartmentStudentVM
-    {        
+    {      
+        public int Id { get; set; }
         public int DepartmentId { get; set; }
         public int StudentId { get; set; }
+        public int SupervisorId { get; set; }
         public string SupervisorName { get; set; }        
         public string StudentFirstName { get; set; }
         public DateTime EnrollmentDate { get; set; }

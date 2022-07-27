@@ -20,18 +20,22 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet ("{DepId}")]  // Search for students by department id and year 
+        [HttpGet("{DepId}")]  // Search for students by department id and year 
         public async Task<ActionResult<List<DepartmentStudentVM>>> Get(int DepId, int? year = null)
         {
-            return await _context.DepartmentStudents.ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId && x.Year == year).ToListAsync();
+            if (year != null)
+                return await _context.DepartmentStudents.ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId && x.Year == year).ToListAsync();
+            return await _context.DepartmentStudents.ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).ToListAsync();
         }
 
         [HttpPost]  // authentaction required      //add new student
-        public async Task<ActionResult<int>> Post(StudentVM studentVM, int DepId ,bool year, int supervisorId)
+        public async Task<ActionResult<int>> Post(StudentVM studentVM, int DepId, bool year, int supervisorId)
         {
+            studentVM.Id = 0;
             int strtyr;
-            var student = _mapper.Map<Student>(studentVM);            
+            var student = _mapper.Map<Student>(studentVM);
             _context.Students.Add(student);
+            await _context.SaveChangesAsync();
             if (year = true)
                 strtyr = 1;
             else strtyr = 0;
@@ -49,29 +53,39 @@ namespace UniversitySystem.Controllers
             return Ok(student.Id);
         }
 
-        [HttpPut ("{StudentId}")] // authentaction required   //Edit student info by id
-        public async Task<ActionResult<bool>> Put(int StudentId, [FromBody] StudentVM studentVM, [FromBody] DepartmentStudent DepartmentStudent)
+        [HttpPut("{StudentId}")] // authentaction required   //Edit student info by id
+        public async Task<ActionResult<bool>> Put(int StudentId, [FromBody] StudentVM studentVM, 
+                                                                 int depId,
+                                                                 DateTime graduationDate,
+                                                                 bool isActive,
+                                                                 int year,
+                                                                 int supervisorId)
         {
-            var stdntup = await _context.Students.FirstOrDefaultAsync(c => c.Id == StudentId);
-            var depstdntup = await _context.DepartmentStudents.FirstOrDefaultAsync(c => c.StudentId == StudentId);
-            if(stdntup == null)
-                return NotFound("ID not found");
+            var student = await _context.Students.FirstOrDefaultAsync(s => s.Id == StudentId);
+            var DepStu = await _context.DepartmentStudents.FirstOrDefaultAsync(ds => ds.StudentId == StudentId);
 
-            stdntup.FirstName = studentVM.FirstName;
-            stdntup.LastName = studentVM.LastName;
-            stdntup.PhoneNumber = studentVM.PhoneNumber;
-            stdntup.Address = studentVM.Address;
-            stdntup.Email = studentVM.Email;
-            depstdntup.DepartmentId = DepartmentStudent.DepartmentId;
-            depstdntup.Year = DepartmentStudent.Year;
-            depstdntup.SupervisorId = DepartmentStudent.SupervisorId;
-            depstdntup.IsActive = DepartmentStudent.IsActive;
-            depstdntup.GraduationDate = DepartmentStudent.GraduationDate;
+            if (student == null)
+                return NotFound("Id was not found");
+            if (DepStu == null)
+                return NotFound("Id was not found");
+            studentVM.Id = student.Id;
+
+
+            student.FirstName = studentVM.FirstName;
+            student.LastName = studentVM.LastName;
+            student.PhoneNumber = studentVM.PhoneNumber;
+            student.Address = studentVM.Address;
+            student.Email = studentVM.Email;
+            DepStu.DepartmentId = depId;
+            DepStu.Year = year;
+            DepStu.SupervisorId = supervisorId;
+            DepStu.IsActive = isActive;
+            DepStu.GraduationDate = graduationDate;
             await _context.SaveChangesAsync();
             return Ok(true);
         }
 
-        [HttpDelete ("{StudentId}")] // authentaction required //delete a student by id
+        [HttpDelete("{StudentId}")] // authentaction required //delete a student by id
 
         public async Task<ActionResult<bool>> Delete(int StudentId)
         {

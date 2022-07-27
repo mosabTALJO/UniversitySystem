@@ -20,13 +20,13 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet ("{EmployeeId}")]
+        [HttpGet("{EmployeeId}")]
         public async Task<ActionResult<List<EmployeeVM>>> Get(int EmployeeId)
         {
-            return await _context.Employees.ProjectTo<EmployeeVM>(_mapper.ConfigurationProvider).Where(x => x.Id == EmployeeId).ToListAsync();
+            return Ok(await _context.Employees.ProjectTo<EmployeeVM>(_mapper.ConfigurationProvider).Where(x => x.Id == EmployeeId).ToListAsync());
         }
 
-        [HttpPost]  // authentaction required   //add new teacher and employee
+        [HttpPost("teacher")]  // authentaction required   //add new teacher and employee
         public async Task<ActionResult<int>> AddTeacher(EmployeeVM EmployeeVM, int SalaryId)
         {
             var employee = _mapper.Map<Employee>(EmployeeVM);            
@@ -36,7 +36,7 @@ namespace UniversitySystem.Controllers
             return Ok(employee.Id);
         }
 
-        [HttpPost]  // authentaction required   //add new manager and employee
+        [HttpPost("manager")]  // authentaction required   //add new manager and employee
         public async Task<ActionResult<int>> AddManager(EmployeeVM EmployeeVM , int SalaryID)
         {
             var employee = _mapper.Map<Employee>(EmployeeVM);
@@ -46,7 +46,7 @@ namespace UniversitySystem.Controllers
             return Ok(employee.Id);
         }
 
-        [HttpPut ("{EmployeeId}")]
+        [HttpPut("{EmployeeId}")]
         public async Task<ActionResult<bool>> Put(int EmployeeId, [FromBody] EmployeeVM EmployeeVM)
         {
             var c = await _context.Employees.FirstOrDefaultAsync(c => c.Id == EmployeeId);
@@ -62,7 +62,7 @@ namespace UniversitySystem.Controllers
             return Ok(true);
         }
 
-        [HttpDelete ("{EmployeeId}")]
+        [HttpDelete("{EmployeeId}")]
 
         public async Task<ActionResult<bool>> Delete(int EmployeeId)
         {
