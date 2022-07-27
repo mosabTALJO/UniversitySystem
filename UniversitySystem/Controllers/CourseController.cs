@@ -20,7 +20,7 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet] // search for a course
         public async Task<ActionResult<List<CourseVM>>> Get(
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 20,
@@ -35,7 +35,7 @@ namespace UniversitySystem.Controllers
 
         
 
-        [HttpPost]
+        [HttpPost]  //add new course
         public async Task<ActionResult<int>> Post(CourseVM courseVM)
         {
             var course = _mapper.Map<Course>(courseVM);
@@ -44,8 +44,8 @@ namespace UniversitySystem.Controllers
             return Ok(course.Id);
         }
 
-        [HttpPut("{Id}")]
-        public async Task<ActionResult<bool>> Put(int Id, [FromBody] CourseVM courseVM)
+        [HttpPut("{Id}")] // update info of a course
+        public async Task<ActionResult<bool>> Put(int Id, [FromBody] CourseVM courseVM) 
         {
             var c = await _context.Courses.FirstOrDefaultAsync(c => c.Id == Id);
             if (c == null)
@@ -56,7 +56,7 @@ namespace UniversitySystem.Controllers
             return Ok(true);
         }
 
-        [HttpDelete("{Id}")]
+        [HttpDelete("{Id}")]   // delete course
         public async Task<ActionResult<bool>> Delete(int Id)
         {
             var c = await _context.Courses.FirstOrDefaultAsync(c => c.Id == Id);
