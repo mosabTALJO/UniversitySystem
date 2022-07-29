@@ -1,4 +1,4 @@
-﻿namespace UniversitySystem.ViewModels
+﻿namespace UniversitySystem.ViewModels.EmployeeVM
 {
     public class EmployeeVM
     {
@@ -8,6 +8,7 @@
         public string Address { get; set; }
         public string Email { get; set; }
         public long PhoneNumber { get; set; }
+        public int SalaryId { get; set; }
         public virtual ICollection<DepartmentStudentVM> DepartmentStudents { get; set; }
     }
 }

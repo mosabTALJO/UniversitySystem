@@ -1,4 +1,6 @@
-﻿namespace UniversitySystem.ViewModels
+﻿using UniversitySystem.ViewModels.SemesterCourseTeacherVMs;
+
+namespace UniversitySystem.ViewModels.DepartmentSemesterCourseVM
 {
     public class DepartmentSemesterCourseVM
     {

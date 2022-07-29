@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using UniversitySystem.Data;
 using UniversitySystem.Models;
 using UniversitySystem.ViewModels;
+using UniversitySystem.ViewModels.EmployeeVM;
 
 namespace UniversitySystem.Controllers
 {
@@ -29,30 +30,25 @@ namespace UniversitySystem.Controllers
             return Ok(await _context.Employees.ProjectTo<EmployeeInfoVM>(_mapper.ConfigurationProvider).Where(x => x.Id == EmployeeId).ToListAsync());
         }
 
-        [HttpGet("SalaryList/{SalaryId}")]//works
-        public async Task<ActionResult<List<SalaryVM>>> GetSalary(int SalaryId)
-        {
-            var salry = await _context.Salaries.FirstOrDefaultAsync(slry => slry.Id == SalaryId);
-            if (salry == null) return NotFound("no salary with this ID");
-            return Ok(salry);
-        }
-
-        [HttpPost("teacher")]  // authentaction required   //add new teacher and employee   // this may need change from employeeinfovm to employeevm "evenualay they need changening"
+        [HttpPost("teacher")]  // authentaction required   //add new teacher and employee
         public async Task<ActionResult<int>> AddTeacher(EmployeeInfoVM EmployeeVM, int SalaryId)
         {
+            EmployeeVM.Id = 0;
             var employee = _mapper.Map<Employee>(EmployeeVM);            
             _context.Employees.Add(employee);            
-            _context.Teachers.Add(new Teacher { EmployeeId = employee.Id , SalaryId  = SalaryId});
+            await _context.SaveChangesAsync();
+            _context.Teachers.Add(new Teacher { EmployeeId = employee.Id });
             await _context.SaveChangesAsync();
             return Ok(employee.Id);
         }
 
-        [HttpPost("manager")]  // authentaction required   //add new manager and employee   // this too
+        [HttpPost("manager")]  // authentaction required   //add new manager and employee
         public async Task<ActionResult<int>> AddManager(EmployeeInfoVM EmployeeVM , int SalaryID)
         {
             var employee = _mapper.Map<Employee>(EmployeeVM);
             _context.Employees.Add(employee);
-            _context.ManagementStaffs.Add(new ManagementStaff { EmployeeId = employee.Id , SalaryId = SalaryID});
+            await _context.SaveChangesAsync();
+            _context.ManagementStaffs.Add(new ManagementStaff { EmployeeId = employee.Id });
             await _context.SaveChangesAsync();
             return Ok(employee.Id);
         }
@@ -73,28 +69,6 @@ namespace UniversitySystem.Controllers
             return Ok(true);
         }
 
-        [HttpPut("Update Salary")] // this need changeng as  the one below "has to much info to fill" //but it's working
-        public async Task<ActionResult<bool>> UpdateSalary(int SalaryId, [FromBody] SalaryVM SalaryVM)
-        {
-            var Salry = await _context.Salaries.FirstOrDefaultAsync(s => s.Id == SalaryId);
-            if (Salry == null) return NotFound("No Salary Found");
-            
-            Salry.Rank = SalaryVM.Rank;
-            Salry.Amount = SalaryVM.Amount;
-            Salry.StartDate = SalaryVM.StartDate;
-            Salry.EndDate = SalaryVM.EndDate;
-            await _context.SaveChangesAsync();
-            return Ok();
-        }
-        [HttpPost("Salary")]    //this not working // error with maping
-        public async Task<ActionResult<int>> AddSalary(SalaryVM SalaryVM)
-        {
-            var Salary = _mapper.Map<Salary>(SalaryVM);
-            _context.Salaries.Add(Salary);
-            await _context.SaveChangesAsync();
-            return Ok(Salary.Id);
-        }
-
         [HttpDelete("{EmployeeId}")]
         public async Task<ActionResult<bool>> Delete(int EmployeeId)
         {
@@ -105,8 +79,5 @@ namespace UniversitySystem.Controllers
             await _context.SaveChangesAsync();
             return Ok(true);
         }     
-
-        
-
     }
 }

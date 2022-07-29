@@ -30,11 +30,11 @@ namespace UniversitySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("Date")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("DepSemCourseId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("DepartmentStudentId")
                         .HasColumnType("int");
@@ -44,7 +44,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("DepSemCourseId");
 
                     b.HasIndex("DepartmentStudentId");
 
@@ -104,7 +104,7 @@ namespace UniversitySystem.Migrations
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("StartDate")
@@ -205,14 +205,9 @@ namespace UniversitySystem.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SalaryId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
-
-                    b.HasIndex("SalaryId");
 
                     b.ToTable("ManagementStaffs");
                 });
@@ -228,7 +223,10 @@ namespace UniversitySystem.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Rank")
@@ -239,6 +237,8 @@ namespace UniversitySystem.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
 
                     b.ToTable("Salaries");
                 });
@@ -251,10 +251,10 @@ namespace UniversitySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("CourseId")
+                    b.Property<int>("DepSemCourseId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("StartDate")
@@ -265,7 +265,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("DepSemCourseId");
 
                     b.HasIndex("TeacherId");
 
@@ -312,7 +312,7 @@ namespace UniversitySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("CourseId")
+                    b.Property<int>("DepSemCourseId")
                         .HasColumnType("int");
 
                     b.Property<int?>("DepartmentStudentId")
@@ -329,7 +329,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("DepSemCourseId");
 
                     b.HasIndex("DepartmentStudentId");
 
@@ -349,14 +349,9 @@ namespace UniversitySystem.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SalaryId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
-
-                    b.HasIndex("SalaryId");
 
                     b.ToTable("Teachers");
                 });
@@ -369,12 +364,12 @@ namespace UniversitySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Day")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DepSemCourseId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("End")
                         .HasColumnType("datetime2");
@@ -384,16 +379,16 @@ namespace UniversitySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("DepSemCourseId");
 
                     b.ToTable("WeekPrograms");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Attendance", b =>
                 {
-                    b.HasOne("UniversitySystem.Models.DepartmentSemesterCourse", "Course")
+                    b.HasOne("UniversitySystem.Models.DepartmentSemesterCourse", "DepSemCourse")
                         .WithMany("Attendances")
-                        .HasForeignKey("CourseId")
+                        .HasForeignKey("DepSemCourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -407,7 +402,7 @@ namespace UniversitySystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Course");
+                    b.Navigation("DepSemCourse");
 
                     b.Navigation("Student");
                 });
@@ -466,22 +461,25 @@ namespace UniversitySystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("UniversitySystem.Models.Salary", "Salary")
-                        .WithMany("ManagementStaffs")
-                        .HasForeignKey("SalaryId")
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("UniversitySystem.Models.Salary", b =>
+                {
+                    b.HasOne("UniversitySystem.Models.Employee", "Employee")
+                        .WithMany("Salaries")
+                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Employee");
-
-                    b.Navigation("Salary");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.SemesterCourseTeacher", b =>
                 {
-                    b.HasOne("UniversitySystem.Models.DepartmentSemesterCourse", "Course")
+                    b.HasOne("UniversitySystem.Models.DepartmentSemesterCourse", "DepSemCourse")
                         .WithMany("SemesterCourseTeachers")
-                        .HasForeignKey("CourseId")
+                        .HasForeignKey("DepSemCourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -491,16 +489,16 @@ namespace UniversitySystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Course");
+                    b.Navigation("DepSemCourse");
 
                     b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.TakenCourse", b =>
                 {
-                    b.HasOne("UniversitySystem.Models.DepartmentSemesterCourse", "Course")
+                    b.HasOne("UniversitySystem.Models.DepartmentSemesterCourse", "DepSemCourse")
                         .WithMany("TakenCourses")
-                        .HasForeignKey("CourseId")
+                        .HasForeignKey("DepSemCourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -514,7 +512,7 @@ namespace UniversitySystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Course");
+                    b.Navigation("DepSemCourse");
 
                     b.Navigation("Teacher");
                 });
@@ -527,26 +525,18 @@ namespace UniversitySystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("UniversitySystem.Models.Salary", "Salary")
-                        .WithMany("Teachers")
-                        .HasForeignKey("SalaryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Employee");
-
-                    b.Navigation("Salary");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.WeekProgram", b =>
                 {
-                    b.HasOne("UniversitySystem.Models.DepartmentSemesterCourse", "Course")
+                    b.HasOne("UniversitySystem.Models.DepartmentSemesterCourse", "DepSemCourse")
                         .WithMany("WeekPrograms")
-                        .HasForeignKey("CourseId")
+                        .HasForeignKey("DepSemCourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Course");
+                    b.Navigation("DepSemCourse");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Course", b =>
@@ -585,12 +575,7 @@ namespace UniversitySystem.Migrations
 
                     b.Navigation("ManagementStaffs");
 
-                    b.Navigation("Teachers");
-                });
-
-            modelBuilder.Entity("UniversitySystem.Models.Salary", b =>
-                {
-                    b.Navigation("ManagementStaffs");
+                    b.Navigation("Salaries");
 
                     b.Navigation("Teachers");
                 });

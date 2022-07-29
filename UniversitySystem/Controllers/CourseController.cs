@@ -20,24 +20,21 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet] // search for a course
+        [HttpGet] // search for a course or get them all
         public async Task<ActionResult<List<CourseVM>>> Get(
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 20,
-            [FromQuery] string search = null)
+            [FromQuery] string? search = null)
         {
             if(!string.IsNullOrEmpty(search))
                 return Ok(await _context.Courses.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<CourseVM>(_mapper.ConfigurationProvider).Where(c => c.Name.Contains(search)).ToListAsync());
             return Ok(await _context.Courses.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<CourseVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 
-        
-
-        
-
         [HttpPost]  //add new course
         public async Task<ActionResult<int>> Post(CourseVM courseVM)
         {
+            courseVM.Id = 0;
             var course = _mapper.Map<Course>(courseVM);
             await _context.Courses.AddAsync(course);
             await _context.SaveChangesAsync();
@@ -50,6 +47,7 @@ namespace UniversitySystem.Controllers
             var c = await _context.Courses.FirstOrDefaultAsync(c => c.Id == Id);
             if (c == null)
                 return NotFound("Id not found");
+            courseVM.Id = Id;
 
             c.Name = courseVM.Name;
             await _context.SaveChangesAsync();

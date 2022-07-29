@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using UniversitySystem.Data;
 using UniversitySystem.Models;
 using UniversitySystem.ViewModels;
+using UniversitySystem.ViewModels.DepartmentSemesterCourseVM;
 
 namespace UniversitySystem.Controllers
 {
@@ -28,7 +29,7 @@ namespace UniversitySystem.Controllers
             [FromQuery] string? search = null)
         {
             if (!string.IsNullOrEmpty(search))
-                return Ok(await _context.DepartmentSemesterCourses.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider).Where(c => c.Course.Contains(search)).ToListAsync());
+                return Ok(await _context.DepartmentSemesterCourses.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).Where(c => c.Course.Contains(search)).ToListAsync());
             return Ok(await _context.DepartmentSemesterCourses.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).ToListAsync());
         }
 
@@ -42,8 +43,8 @@ namespace UniversitySystem.Controllers
             return Ok(_context.DepartmentSemesterCourses.ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider).Where(c => c.CourseId == Id));
         }
 
-        [HttpPost("New Department Semester Course")] // only one body can be sent to a request
-        public async Task<ActionResult<bool>> Post([FromBody] DepartmentSemesterCourseVM DepSemCourseVM)
+        [HttpPost("NewDepartmentSemesterCourse")] // only one body can be sent to a request
+        public async Task<ActionResult<int>> Post([FromBody] DepartmentSemesterCoursePostVM DepSemCourseVM)
         {
             var DepSemCourse = _mapper.Map<DepartmentSemesterCourse>(DepSemCourseVM);
             await _context.DepartmentSemesterCourses.AddAsync(DepSemCourse);
@@ -51,13 +52,20 @@ namespace UniversitySystem.Controllers
             return Ok(DepSemCourse.Id);
         }
 
-        [HttpPost("New Department")]
-        public async Task<ActionResult<bool>> AddDep([FromBody] DepartmentVM DepartmentVM)
+        [HttpPut("{DepSemCourseId}")]
+        public async Task<ActionResult<bool>> Post(int DepSemCourseId, [FromBody] DepartmentSemesterCoursePostVM DepSemCourseVM)
         {
-            var Department = _mapper.Map<Department>(DepartmentVM);
-            await _context.Departments.AddAsync(Department);
+            var depSemCourse = await _context.DepartmentSemesterCourses.FirstOrDefaultAsync(dsm => dsm.Id == DepSemCourseId);
+            if (depSemCourse == null)
+                return NotFound("Id not found");
+
+            depSemCourse.Credit = DepSemCourseVM.Credit;
+            depSemCourse.StudentsAmount = DepSemCourseVM.StudentsAmount;
+            depSemCourse.StartDate = DepSemCourseVM.StartDate;
+            depSemCourse.EndDate = DepSemCourseVM.EndDate;
+
             await _context.SaveChangesAsync();
-            return Ok();   
+            return Ok(true);
         }
     }
 }

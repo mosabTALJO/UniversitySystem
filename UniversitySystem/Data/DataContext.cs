@@ -9,9 +9,8 @@ namespace UniversitySystem.Data
         {
 
         }
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //protected override void OnModelCreating(ModelBuilder builder)
         //{
-            
         //}
         public DbSet<Attendance> Attendances { get; set; }
         public DbSet<Course> Courses { get; set; }

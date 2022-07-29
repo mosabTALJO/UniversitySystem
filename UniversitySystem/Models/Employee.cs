@@ -1,4 +1,6 @@
-﻿namespace UniversitySystem.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace UniversitySystem.Models
 {
     public class Employee
     {
@@ -8,7 +10,10 @@
         public string Address { get; set; }
         public string Email { get; set; }
         public long PhoneNumber { get; set; }
-        //public virtual DepartmentStudent SupervisedStudent { get; set; }
+        //public int? CurrentSalaryId { get; set; }
+        //[NotMapped]
+        //public virtual Salary? CurrentSalary { get; set; }
+        public virtual ICollection<Salary> Salaries { get; set; }
         public virtual ICollection<ManagementStaff> ManagementStaffs { get; set; }
         public virtual ICollection<Teacher> Teachers { get; set; }
         public virtual ICollection<DepartmentStudent> DepartmentStudents { get; set; }
