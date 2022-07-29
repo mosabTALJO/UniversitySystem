@@ -28,7 +28,16 @@ namespace UniversitySystem.Controllers
             return await _context.DepartmentStudents.ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).ToListAsync();
         }
 
-        [HttpPost]  // authentaction required      //add new student
+        [HttpGet("student name")]// this is not working whatt ever is the name he is going null
+        public async Task<ActionResult<List<StudentVM>>> GetStudnt(string StdnNm)
+        {
+            var name = await _context.Students.ProjectTo<StudentVM>(_mapper.ConfigurationProvider).Where(nm => nm.FirstName == StdnNm).ToListAsync();
+            if (name != null)
+                return NotFound("No student with tis name");
+            return Ok(name);
+        }
+
+        [HttpPost ("New student")]  // authentaction required      //add new student
         public async Task<ActionResult<int>> Post(StudentVM studentVM, int DepId, bool year, int supervisorId)
         {
             studentVM.Id = 0;
@@ -97,15 +106,14 @@ namespace UniversitySystem.Controllers
             return Ok(true);
         }
 
-        //[HttpPost]
+        [HttpPost("Double major student")] // this is not working  "the problem is he is seting the student adress null "
+        public async Task<ActionResult<int>> AddSeconedMajorStudent(DepartmentStudentVM DepartmentStudentVM)
+        {
+            var major = _mapper.Map<DepartmentStudent>(DepartmentStudentVM);
+            _context.DepartmentStudents.Add(major);
+            await _context.SaveChangesAsync();
+            return Ok(major.StudentId);
 
-        //public async Task<ActionResult<int>> AddSeconedMajorStudent (int DepId , DepartmentStudentVM DepartmentStudentVM)
-        //{
-        //    var major = _mapper.Map<DepartmentStudent>(DepartmentStudentVM);
-        //    _context.DepartmentStudents.Add(major);
-
-        //    return Ok();   
-
-        //}
+        }
     }
 }

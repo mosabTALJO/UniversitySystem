@@ -20,14 +20,25 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{EmployeeId}")]
-        public async Task<ActionResult<List<EmployeeVM>>> Get(int EmployeeId)
+        [HttpGet("{EmployeeId}")]//works
+        public async Task<ActionResult<List<EmployeeInfoVM>>> Get(int EmployeeId)
         {
-            return Ok(await _context.Employees.ProjectTo<EmployeeVM>(_mapper.ConfigurationProvider).Where(x => x.Id == EmployeeId).ToListAsync());
+            var c = await _context.Employees.FirstOrDefaultAsync(c => c.Id == EmployeeId);
+            if (c == null)
+                return NotFound("There is no empolyee with this ID");
+            return Ok(await _context.Employees.ProjectTo<EmployeeInfoVM>(_mapper.ConfigurationProvider).Where(x => x.Id == EmployeeId).ToListAsync());
         }
 
-        [HttpPost("teacher")]  // authentaction required   //add new teacher and employee
-        public async Task<ActionResult<int>> AddTeacher(EmployeeVM EmployeeVM, int SalaryId)
+        [HttpGet("SalaryList/{SalaryId}")]//works
+        public async Task<ActionResult<List<SalaryVM>>> GetSalary(int SalaryId)
+        {
+            var salry = await _context.Salaries.FirstOrDefaultAsync(slry => slry.Id == SalaryId);
+            if (salry == null) return NotFound("no salary with this ID");
+            return Ok(salry);
+        }
+
+        [HttpPost("teacher")]  // authentaction required   //add new teacher and employee   // this may need change from employeeinfovm to employeevm "evenualay they need changening"
+        public async Task<ActionResult<int>> AddTeacher(EmployeeInfoVM EmployeeVM, int SalaryId)
         {
             var employee = _mapper.Map<Employee>(EmployeeVM);            
             _context.Employees.Add(employee);            
@@ -36,8 +47,8 @@ namespace UniversitySystem.Controllers
             return Ok(employee.Id);
         }
 
-        [HttpPost("manager")]  // authentaction required   //add new manager and employee
-        public async Task<ActionResult<int>> AddManager(EmployeeVM EmployeeVM , int SalaryID)
+        [HttpPost("manager")]  // authentaction required   //add new manager and employee   // this too
+        public async Task<ActionResult<int>> AddManager(EmployeeInfoVM EmployeeVM , int SalaryID)
         {
             var employee = _mapper.Map<Employee>(EmployeeVM);
             _context.Employees.Add(employee);
@@ -46,8 +57,8 @@ namespace UniversitySystem.Controllers
             return Ok(employee.Id);
         }
 
-        [HttpPut("{EmployeeId}")]
-        public async Task<ActionResult<bool>> Put(int EmployeeId, [FromBody] EmployeeVM EmployeeVM)
+        [HttpPut("{EmployeeId}")] // works
+        public async Task<ActionResult<bool>> Put(int EmployeeId, [FromBody] EmployeeInfoVM EmployeeVM)
         {
             var c = await _context.Employees.FirstOrDefaultAsync(c => c.Id == EmployeeId);
             if(c == null)
@@ -62,8 +73,29 @@ namespace UniversitySystem.Controllers
             return Ok(true);
         }
 
-        [HttpDelete("{EmployeeId}")]
+        [HttpPut("Update Salary")] // this need changeng as  the one below "has to much info to fill" //but it's working
+        public async Task<ActionResult<bool>> UpdateSalary(int SalaryId, [FromBody] SalaryVM SalaryVM)
+        {
+            var Salry = await _context.Salaries.FirstOrDefaultAsync(s => s.Id == SalaryId);
+            if (Salry == null) return NotFound("No Salary Found");
+            
+            Salry.Rank = SalaryVM.Rank;
+            Salry.Amount = SalaryVM.Amount;
+            Salry.StartDate = SalaryVM.StartDate;
+            Salry.EndDate = SalaryVM.EndDate;
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+        [HttpPost("Salary")]    //this not working // error with maping
+        public async Task<ActionResult<int>> AddSalary(SalaryVM SalaryVM)
+        {
+            var Salary = _mapper.Map<Salary>(SalaryVM);
+            _context.Salaries.Add(Salary);
+            await _context.SaveChangesAsync();
+            return Ok(Salary.Id);
+        }
 
+        [HttpDelete("{EmployeeId}")]
         public async Task<ActionResult<bool>> Delete(int EmployeeId)
         {
             var c = await _context.Employees.FirstOrDefaultAsync(c => c.Id == EmployeeId);

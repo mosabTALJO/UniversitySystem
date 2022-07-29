@@ -42,13 +42,22 @@ namespace UniversitySystem.Controllers
             return Ok(_context.DepartmentSemesterCourses.ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider).Where(c => c.CourseId == Id));
         }
 
-        [HttpPost] // only one body can be sent to a request
+        [HttpPost("New Department Semester Course")] // only one body can be sent to a request
         public async Task<ActionResult<bool>> Post([FromBody] DepartmentSemesterCourseVM DepSemCourseVM)
         {
             var DepSemCourse = _mapper.Map<DepartmentSemesterCourse>(DepSemCourseVM);
             await _context.DepartmentSemesterCourses.AddAsync(DepSemCourse);
             await _context.SaveChangesAsync();
             return Ok(DepSemCourse.Id);
+        }
+
+        [HttpPost("New Department")]
+        public async Task<ActionResult<bool>> AddDep([FromBody] DepartmentVM DepartmentVM)
+        {
+            var Department = _mapper.Map<Department>(DepartmentVM);
+            await _context.Departments.AddAsync(Department);
+            await _context.SaveChangesAsync();
+            return Ok();   
         }
     }
 }

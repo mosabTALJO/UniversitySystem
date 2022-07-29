@@ -13,7 +13,8 @@ namespace UniversitySystem.Helpers
 
             CreateMap<WeekProgram, WeekProgramVM>().ReverseMap();
 
-            CreateMap<SemesterCourseTeacher, SemesterCourseTeacherVM>().ReverseMap();
+            CreateMap<SemesterCourseTeacher, SemesterCourseTeacherVM>()/*.ForMember(dest => dest.Course , opt => opt.MapFrom(src => src.Course.Course.Name))
+                                                                       .ForMember(dest => dest.Teacher, opt => opt.MapFrom(src => src.Teacher.Employee.FirstName))*/.ReverseMap();
 
             CreateMap<DepartmentStudent, DepartmentStudentVM>().ForMember(dest => dest.SupervisorName, opt => opt.MapFrom(src => src.Supervisor.FirstName + " " + src.Supervisor.LastName))
                                                                .ForMember(dest => dest.StudentFirstName , opt => opt.MapFrom(src => src.Student.FirstName)).ReverseMap();
@@ -30,10 +31,11 @@ namespace UniversitySystem.Helpers
         
             CreateMap<ManagementStaff, ManagementStaffVM>().ReverseMap();
         
-        
-        
-        
-        
+            CreateMap<Department , DepartmentVM>().ReverseMap();
+
+            CreateMap<Employee, EmployeeInfoVM>().ReverseMap();
+
+
         }
     }
 }
