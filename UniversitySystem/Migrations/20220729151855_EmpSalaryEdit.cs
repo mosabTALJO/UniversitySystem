@@ -4,7 +4,7 @@
 
 namespace UniversitySystem.Migrations
 {
-    public partial class www : Migration
+    public partial class EmpSalaryEdit : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -32,33 +32,47 @@ namespace UniversitySystem.Migrations
                 name: "SalaryId",
                 table: "ManagementStaffs");
 
-            migrationBuilder.AlterColumn<double>(
-                name: "Grade",
-                table: "TakenCourses",
-                type: "float",
-                nullable: true,
-                oldClrType: typeof(double),
-                oldType: "float");
+            migrationBuilder.AddColumn<int>(
+                name: "EmployeeId",
+                table: "Salaries",
+                type: "int",
+                nullable: false,
+                defaultValue: 0);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Salaries_EmployeeId",
+                table: "Salaries",
+                column: "EmployeeId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Salaries_Employees_EmployeeId",
+                table: "Salaries",
+                column: "EmployeeId",
+                principalTable: "Employees",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Salaries_Employees_EmployeeId",
+                table: "Salaries");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Salaries_EmployeeId",
+                table: "Salaries");
+
+            migrationBuilder.DropColumn(
+                name: "EmployeeId",
+                table: "Salaries");
+
             migrationBuilder.AddColumn<int>(
                 name: "SalaryId",
                 table: "Teachers",
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
-
-            migrationBuilder.AlterColumn<double>(
-                name: "Grade",
-                table: "TakenCourses",
-                type: "float",
-                nullable: false,
-                defaultValue: 0.0,
-                oldClrType: typeof(double),
-                oldType: "float",
-                oldNullable: true);
 
             migrationBuilder.AddColumn<int>(
                 name: "SalaryId",

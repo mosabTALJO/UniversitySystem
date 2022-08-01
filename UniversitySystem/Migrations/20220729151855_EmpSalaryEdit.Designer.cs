@@ -12,8 +12,8 @@ using UniversitySystem.Data;
 namespace UniversitySystem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220731185922_www")]
-    partial class www
+    [Migration("20220729151855_EmpSalaryEdit")]
+    partial class EmpSalaryEdit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -225,6 +225,9 @@ namespace UniversitySystem.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
@@ -236,6 +239,8 @@ namespace UniversitySystem.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
 
                     b.ToTable("Salaries");
                 });
@@ -315,7 +320,7 @@ namespace UniversitySystem.Migrations
                     b.Property<int?>("DepartmentStudentId")
                         .HasColumnType("int");
 
-                    b.Property<double?>("Grade")
+                    b.Property<double>("Grade")
                         .HasColumnType("float");
 
                     b.Property<int>("StudentId")
@@ -461,6 +466,17 @@ namespace UniversitySystem.Migrations
                     b.Navigation("Employee");
                 });
 
+            modelBuilder.Entity("UniversitySystem.Models.Salary", b =>
+                {
+                    b.HasOne("UniversitySystem.Models.Employee", "Employee")
+                        .WithMany("Salaries")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("UniversitySystem.Models.SemesterCourseTeacher", b =>
                 {
                     b.HasOne("UniversitySystem.Models.DepartmentSemesterCourse", "DepSemCourse")
@@ -560,6 +576,8 @@ namespace UniversitySystem.Migrations
                     b.Navigation("DepartmentStudents");
 
                     b.Navigation("ManagementStaffs");
+
+                    b.Navigation("Salaries");
 
                     b.Navigation("Teachers");
                 });

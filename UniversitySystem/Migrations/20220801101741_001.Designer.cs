@@ -12,8 +12,8 @@ using UniversitySystem.Data;
 namespace UniversitySystem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220731200625_NullTeachInTakenCourse")]
-    partial class NullTeachInTakenCourse
+    [Migration("20220801101741_001")]
+    partial class _001
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -345,13 +345,13 @@ namespace UniversitySystem.Migrations
                     b.Property<int?>("DepartmentStudentId")
                         .HasColumnType("int");
 
-                    b.Property<double?>("Grade")
+                    b.Property<double>("Grade")
                         .HasColumnType("float");
 
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TeacherId")
+                    b.Property<int>("TeacherId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -543,7 +543,9 @@ namespace UniversitySystem.Migrations
 
                     b.HasOne("UniversitySystem.Models.Teacher", "Teacher")
                         .WithMany()
-                        .HasForeignKey("TeacherId");
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("DepSemCourse");
 

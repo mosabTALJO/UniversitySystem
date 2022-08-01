@@ -7,8 +7,7 @@
         public string LastName { get; set; }
         public string Address { get; set; }
         public string Email { get; set; }
-        public long PhoneNumber { get; set; }
-        public int SalaryId { get; set; }
+        public long PhoneNumber { get; set; }        
         public virtual ICollection<DepartmentStudentVM> DepartmentStudents { get; set; }
     }
 }
