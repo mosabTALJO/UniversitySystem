@@ -66,11 +66,6 @@ namespace UniversitySystem.Controllers
             return Ok(takenCourse.Id);
         }
 
-        [HttpGet("teacher/{StuId}")]
-        public async Task<ActionResult<bool>> Get(int StuId)
-        {
-            var lst = _context.TakenCourses.Where(x => x.TeacherId == TeacherId && x.StudentId == StuId);
-
-        }
+        
     }
 }
