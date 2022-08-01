@@ -19,17 +19,17 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{Id}")]
+        [HttpGet("{StuId}")]
         public async Task<ActionResult<List<TakenCourseVM>>> Get(
-            int Id, 
+            int StuId, 
             [FromQuery] int? year = null, 
             [FromQuery] string? guzBaharYaz = null,
             [FromQuery] bool onlyShowActive = false)
         {
-            var stu = await _context.Students.FirstOrDefaultAsync(s => s.Id == Id);
-            var depStu = await _context.DepartmentStudents.FirstOrDefaultAsync(ds => ds.StudentId == Id);
+            var stu = await _context.Students.FirstOrDefaultAsync(s => s.Id == StuId);
+            var depStu = await _context.DepartmentStudents.FirstOrDefaultAsync(ds => ds.StudentId == StuId);
 
-            var lst = _context.TakenCourses.Where(tc => tc.StudentId == Id);
+            var lst = _context.TakenCourses.Where(tc => tc.StudentId == StuId);
 
             if(onlyShowActive)
                 lst = lst.Where(tc => tc.Grade == null);
@@ -42,6 +42,21 @@ namespace UniversitySystem.Controllers
             }
 
             return Ok(await lst.ToListAsync());
+        }
+
+        [HttpGet("teacher/{TeacherId}/{CourseId}")] //teacher gets all students (taken courses) who took a course that he teaches
+        public async Task<ActionResult<List<TakenCourseVM>>> Get(int TeacherId, int CourseId)
+        {
+            var depSemCourse = await _context.DepartmentSemesterCourses.FirstOrDefaultAsync(x => x.CourseId == CourseId && x.EndDate == null);
+            if (depSemCourse == null)
+                return NotFound("this course is not open this semester");
+
+            var semCourTeacher = await _context.SemesterCourseTeachers.FirstOrDefaultAsync(x => x.TeacherId == TeacherId && x.DepSemCourseId == depSemCourse.Id);
+            if (semCourTeacher == null)
+                return BadRequest("you don't teach this course");
+
+            var result = await _context.TakenCourses.Where(x => x.TeacherId == semCourTeacher.Id && x.DepSemCourseId == depSemCourse.Id).ToListAsync();
+            return Ok(result);
         }
 
         [HttpPost("{StuId}/{DepSemCourseId}")]
@@ -64,6 +79,30 @@ namespace UniversitySystem.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(takenCourse.Id);
+        }
+
+        [HttpPut("updateGrade/{TakenCourseId}")]
+        public async Task<ActionResult<bool>> UpdateGrade(int TakenCourseId, double grade)
+        {
+            var takenCourse = await _context.TakenCourses.FirstOrDefaultAsync(x => x.Id == TakenCourseId);
+            if (takenCourse == null)
+                return NotFound("Id not found");
+
+            takenCourse.Grade = grade;
+            await _context.SaveChangesAsync();
+            return Ok(true);
+        }
+
+        [HttpDelete("{TakenCourseId}")]
+        public async Task<ActionResult<bool>> Delete(int TakenCourseId)
+        {
+            var takenCourse = await _context.TakenCourses.FirstOrDefaultAsync(x => x.Id == TakenCourseId);
+            if (takenCourse == null)
+                return NotFound("Id not found");
+
+            _context.TakenCourses.Remove(takenCourse);
+            await _context.SaveChangesAsync();
+            return Ok(true);
         }
     }
 }
