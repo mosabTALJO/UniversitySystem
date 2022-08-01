@@ -12,8 +12,8 @@ using UniversitySystem.Data;
 namespace UniversitySystem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220731185922_www")]
-    partial class www
+    [Migration("20220801101741_001")]
+    partial class _001
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -109,6 +109,9 @@ namespace UniversitySystem.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("SemesterId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -120,6 +123,8 @@ namespace UniversitySystem.Migrations
                     b.HasIndex("CourseId");
 
                     b.HasIndex("DepartmentId");
+
+                    b.HasIndex("SemesterId");
 
                     b.ToTable("DepartmentSemesterCourses");
                 });
@@ -225,6 +230,9 @@ namespace UniversitySystem.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
@@ -237,7 +245,29 @@ namespace UniversitySystem.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmployeeId");
+
                     b.ToTable("Salaries");
+                });
+
+            modelBuilder.Entity("UniversitySystem.Models.Semester", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("GuzBaharYaz")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Semesters");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.SemesterCourseTeacher", b =>
@@ -315,7 +345,7 @@ namespace UniversitySystem.Migrations
                     b.Property<int?>("DepartmentStudentId")
                         .HasColumnType("int");
 
-                    b.Property<double?>("Grade")
+                    b.Property<double>("Grade")
                         .HasColumnType("float");
 
                     b.Property<int>("StudentId")
@@ -418,9 +448,17 @@ namespace UniversitySystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("UniversitySystem.Models.Semester", "Semester")
+                        .WithMany("DepSemCourses")
+                        .HasForeignKey("SemesterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Course");
 
                     b.Navigation("Department");
+
+                    b.Navigation("Semester");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.DepartmentStudent", b =>
@@ -454,6 +492,17 @@ namespace UniversitySystem.Migrations
                 {
                     b.HasOne("UniversitySystem.Models.Employee", "Employee")
                         .WithMany("ManagementStaffs")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("UniversitySystem.Models.Salary", b =>
+                {
+                    b.HasOne("UniversitySystem.Models.Employee", "Employee")
+                        .WithMany("Salaries")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -561,7 +610,14 @@ namespace UniversitySystem.Migrations
 
                     b.Navigation("ManagementStaffs");
 
+                    b.Navigation("Salaries");
+
                     b.Navigation("Teachers");
+                });
+
+            modelBuilder.Entity("UniversitySystem.Models.Semester", b =>
+                {
+                    b.Navigation("DepSemCourses");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Student", b =>

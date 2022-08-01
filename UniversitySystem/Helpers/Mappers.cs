@@ -42,6 +42,8 @@ namespace UniversitySystem.Helpers
 
             CreateMap<TakenCourse, TakenCourseVM>().ReverseMap();
 
+            CreateMap<Semester, SemesterVM>().ReverseMap();
+
 
         }
     }

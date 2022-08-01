@@ -7,7 +7,7 @@ namespace UniversitySystem.ViewModels.SalaryVMs
         public string Rank { get; set; }
         public double Amount { get; set; }
         public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public int EmployeeId { get; set; }
     }
 }

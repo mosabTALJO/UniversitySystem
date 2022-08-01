@@ -4,7 +4,7 @@
 
 namespace UniversitySystem.Migrations
 {
-    public partial class AddedSemesters : Migration
+    public partial class _001 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

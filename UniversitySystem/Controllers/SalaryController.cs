@@ -19,34 +19,57 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("SalaryList/{SalaryId}")]//works
-        public async Task<ActionResult<List<SalaryVM>>> GetSalary(int SalaryId)
+        [HttpGet("SalaryList/{EmployeeId}")]//works
+        public async Task<ActionResult<List<SalaryVM>>> GetSalary(int EmployeeId)// THIS GET S THE CORRENT SALARY
         {
-            var salry = await _context.Salaries.FirstOrDefaultAsync(slry => slry.Id == SalaryId);
-            if (salry == null) return NotFound("no salary with this ID");
-            return Ok(salry);
+            var curntsalry = await _context.Salaries.FirstOrDefaultAsync(slry => slry.EmployeeId == EmployeeId && slry.EndDate == null);
+            if (curntsalry == null) return NotFound("no corrent salary for this employee");
+            return Ok(curntsalry);
         }
 
-        [HttpPut("Update Salary")] // this need changeng as  the one below "has to much info to fill" //but it's working
-        public async Task<ActionResult<bool>> UpdateSalary(int SalaryId, [FromBody] SalaryPostVM salaryVM)
+        [HttpGet("employeeOldSlarayRecords/{EmployeeId}")] // GET All SALAREIS 
+        public async Task<ActionResult<List<SalaryVM>>> GetAllSalaries(int EmployeeId)
         {
-            var salry = await _context.Salaries.FirstOrDefaultAsync(s => s.Id == SalaryId);
-            if (salry == null) return NotFound("No Salary Found");
+            var allsalrys = await _context.Salaries.Where(slry => slry.EmployeeId == EmployeeId).ToListAsync();
+            if (allsalrys == null) return NotFound("no salary with this ID");
 
-            salry.Rank = salaryVM.Rank;
-            salry.Amount = salaryVM.Amount;
-            salry.StartDate = salaryVM.StartDate;
-            salry.EndDate = salaryVM.EndDate;
-            await _context.SaveChangesAsync();
-            return Ok(true);
+            var allsalryVMlist = new List<SalaryVM>();
+            foreach (var salary in allsalrys)
+            {
+                allsalryVMlist.Add(_mapper.Map<SalaryVM>(salary));
+            }
+            return Ok(allsalryVMlist);
         }
-        [HttpPost("Salary")]    //this not working // error with maping
-        public async Task<ActionResult<int>> AddSalary(SalaryPostVM salaryVM)
+
+        [HttpPut("EndSalary")] //works sets an end date for the salary
+        public async Task<ActionResult<bool>> UpdateSalary(int EmployeeId)
         {
-            var salary = _mapper.Map<Salary>(salaryVM);
-            _context.Salaries.Add(salary);
+            var salry = await _context.Salaries.FirstOrDefaultAsync(s => s.EmployeeId == EmployeeId && s.EndDate == null);
+            if (salry == null) return NotFound("No employee Found");
+            
+            salry.EndDate = DateTime.Today;
             await _context.SaveChangesAsync();
-            return Ok(salary.Id);
+            return Ok("true");
         }
+
+        [HttpDelete]
+        public async Task<ActionResult<bool>> DeleteSlryRec(int slryID)
+        {
+            var slry = await _context.Salaries.FirstOrDefaultAsync(s => s.Id == slryID && s.EndDate == null);
+            if (slry == null) return NotFound("no record with this id");
+            return Ok("true");
+        }
+
+        [HttpPost("NewSalaryRecord")] // works  adds new salary record
+        public async Task<ActionResult<int>> AddNewSalaryRecord(SalaryVM salaryVM)
+        {
+            salaryVM.EndDate = null;
+            salaryVM.StartDate = DateTime.Today;
+            var slry = _mapper.Map<Salary>(salaryVM);
+            await _context.Salaries.AddAsync(slry);
+            await _context.SaveChangesAsync();
+            return Ok(slry.Id);
+        }
+    
     }
 }

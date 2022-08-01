@@ -6,6 +6,7 @@ using UniversitySystem.Data;
 using UniversitySystem.Models;
 using UniversitySystem.ViewModels;
 using UniversitySystem.ViewModels.EmployeeVM;
+using UniversitySystem.ViewModels.SalaryVMs;
 
 namespace UniversitySystem.Controllers
 {
@@ -27,27 +28,30 @@ namespace UniversitySystem.Controllers
             var c = await _context.Employees.FirstOrDefaultAsync(c => c.Id == EmployeeId);
             if (c == null)
                 return NotFound("There is no empolyee with this ID");
-            return Ok(await _context.Employees.ProjectTo<EmployeeInfoVM>(_mapper.ConfigurationProvider).Where(x => x.Id == EmployeeId).ToListAsync());
+            var m = await _context.Employees.ProjectTo<EmployeeInfoVM>(_mapper.ConfigurationProvider).Where(x => x.Id == EmployeeId).ToListAsync();
+            return Ok(m);
         }
 
-        [HttpPost("teacher")]  // authentaction required   //add new teacher and employee
-        public async Task<ActionResult<int>> AddTeacher(EmployeeInfoVM EmployeeVM, int SalaryId)
+        [HttpPost("teacher")]  // authentaction required   //add new teacher and employee //this works
+        public async Task<ActionResult<int>> AddTeacher(EmployeeInfoVM EmployeeVM , int amount, string rank)
         {
-            EmployeeVM.Id = 0;
+            EmployeeVM.Id = 0;            
             var employee = _mapper.Map<Employee>(EmployeeVM);            
             _context.Employees.Add(employee);            
             await _context.SaveChangesAsync();
+            _context.Salaries.Add(new Salary { StartDate = DateTime.Now , EndDate = null, EmployeeId = employee.Id,Amount = amount , Rank = rank });
             _context.Teachers.Add(new Teacher { EmployeeId = employee.Id });
             await _context.SaveChangesAsync();
             return Ok(employee.Id);
         }
 
         [HttpPost("manager")]  // authentaction required   //add new manager and employee
-        public async Task<ActionResult<int>> AddManager(EmployeeInfoVM EmployeeVM , int SalaryID)
+        public async Task<ActionResult<int>> AddManager(EmployeeInfoVM EmployeeVM, int amount, string rank)
         {
             var employee = _mapper.Map<Employee>(EmployeeVM);
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
+            _context.Salaries.Add(new Salary { StartDate = DateTime.Now, EndDate = null, EmployeeId = employee.Id, Amount = amount, Rank = rank });
             _context.ManagementStaffs.Add(new ManagementStaff { EmployeeId = employee.Id });
             await _context.SaveChangesAsync();
             return Ok(employee.Id);
