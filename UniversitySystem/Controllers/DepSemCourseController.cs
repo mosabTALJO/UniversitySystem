@@ -26,10 +26,14 @@ namespace UniversitySystem.Controllers
             int DepId,
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 20,
-            [FromQuery] string? search = null)
+            [FromQuery] string? search = null,
+            [FromQuery] int? year = null,
+            [FromQuery] string? guzBaharYaz = null)
         {
             if (!string.IsNullOrEmpty(search))
                 return Ok(await _context.DepartmentSemesterCourses.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).Where(c => c.Course.Contains(search)).ToListAsync());
+            if (year != null && !string.IsNullOrEmpty(guzBaharYaz))
+                return Ok(await _context.DepartmentSemesterCourses.Skip((pageNumber - 1) * pageSize).Take(pageSize).Where(x => x.DepartmentId == DepId && x.Semester.Year == year && x.Semester.GuzBaharYaz == guzBaharYaz).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider).ToListAsync());
             return Ok(await _context.DepartmentSemesterCourses.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).ToListAsync());
         }
 

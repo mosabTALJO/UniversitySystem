@@ -28,7 +28,7 @@ namespace UniversitySystem.Controllers
             return await _context.DepartmentStudents.ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).ToListAsync();
         }
 
-        [HttpGet("student name")]// this is not working whatt ever is the name he is going null
+        [HttpGet("studentName")]// this is not working whatt ever is the name he is going null
         public async Task<ActionResult<List<StudentVM>>> GetStudnt(string StdnNm)
         {
             var name = await _context.Students.ProjectTo<StudentVM>(_mapper.ConfigurationProvider).Where(nm => nm.FirstName == StdnNm).ToListAsync();
@@ -37,7 +37,7 @@ namespace UniversitySystem.Controllers
             return Ok(name);
         }
 
-        [HttpPost ("New student")]  // authentaction required      //add new student
+        [HttpPost ("NewStudent")]  // authentaction required      //add new student
         public async Task<ActionResult<int>> Post(StudentVM studentVM, int DepId, bool year, int supervisorId)
         {
             studentVM.Id = 0;

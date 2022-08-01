@@ -6,6 +6,7 @@ using UniversitySystem.ViewModels.DepartmentSemesterCourseVM;
 using UniversitySystem.ViewModels.EmployeeVM;
 using UniversitySystem.ViewModels.SalaryVMs;
 using UniversitySystem.ViewModels.SemesterCourseTeacherVMs;
+using UniversitySystem.ViewModels.TakenCourseVMs;
 
 namespace UniversitySystem.Helpers
 {
@@ -39,6 +40,7 @@ namespace UniversitySystem.Helpers
         
             CreateMap<Department , DepartmentVM>().ReverseMap();
 
+            CreateMap<TakenCourse, TakenCourseVM>().ReverseMap();
 
 
         }
