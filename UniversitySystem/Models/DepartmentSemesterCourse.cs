@@ -5,8 +5,10 @@
         public int Id { get; set; }
         public int DepartmentId { get; set; }
         public int CourseId { get; set; }
+        public int SemesterId { get; set; }
         public virtual Department Department { get; set; }
         public virtual Course Course { get; set; }
+        public virtual Semester Semester { get; set; }
         public int Credit { get; set; }
         public int StudentsAmount { get; set; }
         public DateTime StartDate { get; set; }

@@ -40,6 +40,7 @@ namespace UniversitySystem.Controllers
                 return Ok(await _context.Departments.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<DepartmentVM>(_mapper.ConfigurationProvider).Where(c => c.Name.Contains(search)).ToListAsync());
             return Ok(await _context.Departments.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<DepartmentVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
+
         [HttpPut] // works
         public async Task<ActionResult<string>> UpdateDep(            
             [FromBody] DepartmentVM departmentVM,

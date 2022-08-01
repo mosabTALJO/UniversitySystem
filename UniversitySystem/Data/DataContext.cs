@@ -25,5 +25,6 @@ namespace UniversitySystem.Data
         public DbSet<TakenCourse> TakenCourses { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<WeekProgram> WeekPrograms { get; set; }
+        public DbSet<Semester> Semesters { get; set; }
     }
 }
