@@ -65,7 +65,5 @@ namespace UniversitySystem.Controllers
 
             return Ok(takenCourse.Id);
         }
-
-        
     }
 }
