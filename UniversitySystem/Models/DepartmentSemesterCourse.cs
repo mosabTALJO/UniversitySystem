@@ -10,12 +10,13 @@
         public virtual Course Course { get; set; }
         public virtual Semester Semester { get; set; }
         public int Credit { get; set; }
-        public int StudentsAmount { get; set; }
+        public int MaxStudents { get; set; }
+        public int NumberOfStudents { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public virtual ICollection<TakenCourse> TakenCourses { get; set; }
-        public virtual ICollection<WeekProgram> WeekPrograms { get; set; }
-        public virtual ICollection<SemesterCourseTeacher> SemesterCourseTeachers { get; set; }
-        public virtual ICollection<Attendance> Attendances { get; set; }
+        public virtual ICollection<TakenCourse>? TakenCourses { get; set; }
+        public virtual ICollection<WeekProgram>? WeekPrograms { get; set; }
+        public virtual ICollection<SemesterCourseTeacher>? SemesterCourseTeachers { get; set; }
+        //public virtual ICollection<Attendance> Attendances { get; set; }
     }
 }

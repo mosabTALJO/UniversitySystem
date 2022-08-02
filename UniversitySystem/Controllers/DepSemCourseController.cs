@@ -64,7 +64,7 @@ namespace UniversitySystem.Controllers
                 return NotFound("Id not found");
 
             depSemCourse.Credit = DepSemCourseVM.Credit;
-            depSemCourse.StudentsAmount = DepSemCourseVM.StudentsAmount;
+            depSemCourse.MaxStudents = DepSemCourseVM.StudentsAmount;
             depSemCourse.StartDate = DepSemCourseVM.StartDate;
             depSemCourse.EndDate = DepSemCourseVM.EndDate;
 

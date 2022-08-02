@@ -29,7 +29,7 @@ namespace UniversitySystem.Controllers
             var stu = await _context.Students.FirstOrDefaultAsync(s => s.Id == StuId);
             var depStu = await _context.DepartmentStudents.FirstOrDefaultAsync(ds => ds.StudentId == StuId);
 
-            var lst = _context.TakenCourses.Where(tc => tc.StudentId == StuId);
+            var lst = _context.TakenCourses.Where(tc => tc.DepStudentId == StuId);
 
             if(onlyShowActive)
                 lst = lst.Where(tc => tc.Grade == null);
@@ -69,13 +69,18 @@ namespace UniversitySystem.Controllers
             var depSemCourse = await _context.DepartmentSemesterCourses.FirstOrDefaultAsync(dsc => dsc.Id == DepSemCourseId);
             if (depSemCourse == null || depSemCourse.EndDate != null)
                 return NotFound("the course you are looking for is not found or is not available this semester");
+            if (depSemCourse.NumberOfStudents >= depSemCourse.MaxStudents)
+                return BadRequest("this course has reached its student limit");
 
             var takenCourse = new TakenCourse
             {
-                StudentId = StuId,
+                DepStudentId = StuId,
                 DepSemCourseId = DepSemCourseId
             };
             await _context.TakenCourses.AddAsync(takenCourse);
+            await _context.SaveChangesAsync();
+
+            depSemCourse.NumberOfStudents++;
             await _context.SaveChangesAsync();
 
             return Ok(takenCourse.Id);
@@ -101,6 +106,11 @@ namespace UniversitySystem.Controllers
                 return NotFound("Id not found");
 
             _context.TakenCourses.Remove(takenCourse);
+            await _context.SaveChangesAsync();
+
+            var temp = takenCourse.DepSemCourse;
+            var depSemCour = await _context.DepartmentSemesterCourses.FirstOrDefaultAsync(x => x == temp);
+            depSemCour.NumberOfStudents--;
             await _context.SaveChangesAsync();
             return Ok(true);
         }

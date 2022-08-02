@@ -12,8 +12,8 @@ using UniversitySystem.Data;
 namespace UniversitySystem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220729151855_EmpSalaryEdit")]
-    partial class EmpSalaryEdit
+    [Migration("20220802080530_rebuild")]
+    partial class rebuild
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -109,6 +109,9 @@ namespace UniversitySystem.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("SemesterId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -120,6 +123,8 @@ namespace UniversitySystem.Migrations
                     b.HasIndex("CourseId");
 
                     b.HasIndex("DepartmentId");
+
+                    b.HasIndex("SemesterId");
 
                     b.ToTable("DepartmentSemesterCourses");
                 });
@@ -245,6 +250,26 @@ namespace UniversitySystem.Migrations
                     b.ToTable("Salaries");
                 });
 
+            modelBuilder.Entity("UniversitySystem.Models.Semester", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("GuzBaharYaz")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Semesters");
+                });
+
             modelBuilder.Entity("UniversitySystem.Models.SemesterCourseTeacher", b =>
                 {
                     b.Property<int>("Id")
@@ -317,16 +342,16 @@ namespace UniversitySystem.Migrations
                     b.Property<int>("DepSemCourseId")
                         .HasColumnType("int");
 
+                    b.Property<int>("DepStudentId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("DepartmentStudentId")
                         .HasColumnType("int");
 
-                    b.Property<double>("Grade")
+                    b.Property<double?>("Grade")
                         .HasColumnType("float");
 
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TeacherId")
+                    b.Property<int?>("TeacherId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -423,9 +448,17 @@ namespace UniversitySystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("UniversitySystem.Models.Semester", "Semester")
+                        .WithMany("DepSemCourses")
+                        .HasForeignKey("SemesterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Course");
 
                     b.Navigation("Department");
+
+                    b.Navigation("Semester");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.DepartmentStudent", b =>
@@ -510,9 +543,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasOne("UniversitySystem.Models.Teacher", "Teacher")
                         .WithMany()
-                        .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TeacherId");
 
                     b.Navigation("DepSemCourse");
 
@@ -580,6 +611,11 @@ namespace UniversitySystem.Migrations
                     b.Navigation("Salaries");
 
                     b.Navigation("Teachers");
+                });
+
+            modelBuilder.Entity("UniversitySystem.Models.Semester", b =>
+                {
+                    b.Navigation("DepSemCourses");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Student", b =>

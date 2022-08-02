@@ -33,22 +33,12 @@ namespace UniversitySystem.Migrations
                     b.Property<DateTime?>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DepSemCourseId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DepartmentStudentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StudentId")
+                    b.Property<int>("TakenCourseId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DepSemCourseId");
-
-                    b.HasIndex("DepartmentStudentId");
-
-                    b.HasIndex("StudentId");
+                    b.HasIndex("TakenCourseId");
 
                     b.ToTable("Attendances");
                 });
@@ -107,14 +97,17 @@ namespace UniversitySystem.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("MaxStudents")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfStudents")
+                        .HasColumnType("int");
+
                     b.Property<int>("SemesterId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("StudentsAmount")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -340,14 +333,14 @@ namespace UniversitySystem.Migrations
                     b.Property<int>("DepSemCourseId")
                         .HasColumnType("int");
 
+                    b.Property<int>("DepStudentId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("DepartmentStudentId")
                         .HasColumnType("int");
 
                     b.Property<double?>("Grade")
                         .HasColumnType("float");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
 
                     b.Property<int?>("TeacherId")
                         .HasColumnType("int");
@@ -411,25 +404,13 @@ namespace UniversitySystem.Migrations
 
             modelBuilder.Entity("UniversitySystem.Models.Attendance", b =>
                 {
-                    b.HasOne("UniversitySystem.Models.DepartmentSemesterCourse", "DepSemCourse")
+                    b.HasOne("UniversitySystem.Models.TakenCourse", "TakenCourse")
                         .WithMany("Attendances")
-                        .HasForeignKey("DepSemCourseId")
+                        .HasForeignKey("TakenCourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("UniversitySystem.Models.DepartmentStudent", null)
-                        .WithMany("Attendances")
-                        .HasForeignKey("DepartmentStudentId");
-
-                    b.HasOne("UniversitySystem.Models.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DepSemCourse");
-
-                    b.Navigation("Student");
+                    b.Navigation("TakenCourse");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.DepartmentSemesterCourse", b =>
@@ -584,8 +565,6 @@ namespace UniversitySystem.Migrations
 
             modelBuilder.Entity("UniversitySystem.Models.DepartmentSemesterCourse", b =>
                 {
-                    b.Navigation("Attendances");
-
                     b.Navigation("SemesterCourseTeachers");
 
                     b.Navigation("TakenCourses");
@@ -595,8 +574,6 @@ namespace UniversitySystem.Migrations
 
             modelBuilder.Entity("UniversitySystem.Models.DepartmentStudent", b =>
                 {
-                    b.Navigation("Attendances");
-
                     b.Navigation("TakenCourses");
                 });
 
@@ -619,6 +596,11 @@ namespace UniversitySystem.Migrations
             modelBuilder.Entity("UniversitySystem.Models.Student", b =>
                 {
                     b.Navigation("DepartmentStudents");
+                });
+
+            modelBuilder.Entity("UniversitySystem.Models.TakenCourse", b =>
+                {
+                    b.Navigation("Attendances");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Teacher", b =>
