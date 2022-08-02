@@ -49,10 +49,9 @@ namespace UniversitySystem.Controllers
             var sem = await _context.Semesters.FirstOrDefaultAsync(dp => dp.Year == year);
             if (sem == null)
                 return BadRequest("no semester like this");
-
+                        
             sem.Year = semesterVM.Year;
             sem.GuzBaharYaz = semesterVM.GuzBaharYaz;
-            sem.Price = semesterVM.Price;
             await _context.SaveChangesAsync();
             return Ok(sem.GuzBaharYaz);
         }

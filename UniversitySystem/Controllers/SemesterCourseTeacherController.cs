@@ -59,7 +59,7 @@ namespace UniversitySystem.Controllers
             return Ok(NewCourseTeacher.Id);
         }
 
-        [HttpPut("{ID}")] // for some reason this not working 
+        [HttpPut("{ID}")] // it works
         public async Task<ActionResult<bool>> UpdateCourseTeacher(int ID, [FromBody] SemesterCourseTeacherVM SemesterCourseTeacherVM)
         {
             var EditCourse = await _context.SemesterCourseTeachers.FirstOrDefaultAsync(c => c.Id == ID);
