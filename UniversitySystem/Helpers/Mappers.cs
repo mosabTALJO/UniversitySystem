@@ -7,6 +7,7 @@ using UniversitySystem.ViewModels.EmployeeVM;
 using UniversitySystem.ViewModels.SalaryVMs;
 using UniversitySystem.ViewModels.SemesterCourseTeacherVMs;
 using UniversitySystem.ViewModels.TakenCourseVMs;
+using UniversitySystem.ViewModels.WeekProgramVMs;
 
 namespace UniversitySystem.Helpers
 {
@@ -17,7 +18,9 @@ namespace UniversitySystem.Helpers
             CreateMap<DepartmentSemesterCourse, DepartmentSemesterCourseVM>().ForMember(dest => dest.Course, opt => opt.MapFrom(src => src.Course.Name)).ReverseMap();
             CreateMap<DepartmentSemesterCourse, DepartmentSemesterCoursePostVM>().ReverseMap();
 
-            CreateMap<WeekProgram, WeekProgramVM>().ReverseMap();
+            CreateMap<WeekProgram, WeekProgramPostVM>().ForMember(dest => dest.DepSemCourseId, opt => opt.MapFrom(src => src.DepSemCourseId)).ReverseMap();
+            CreateMap<WeekProgram, WeekProgramVM>().ForMember(dest => dest.DepSemCourseId, opt => opt.MapFrom(src => src.DepSemCourseId))
+                                                   .ForMember(dest => dest.CourseName, opt => opt.MapFrom(src => src.DepSemCourse.Course.Name)).ReverseMap();
 
             CreateMap<SemesterCourseTeacher, SemesterCourseTeacherVM>().ReverseMap();
 
@@ -34,7 +37,7 @@ namespace UniversitySystem.Helpers
 
             CreateMap<Teacher, TeacherVM>().ForMember(dest => dest.SemesterCourseTeachers , opt => opt.MapFrom(src => src.SemesterCourseTeachers)).ReverseMap(); // we may have some problems here 
 
-            CreateMap<Student, StudentVM>().ReverseMap(); // and here " baisecly i fucked up "
+            CreateMap<Student, StudentVM>().ReverseMap(); 
         
             CreateMap<ManagementStaff, ManagementStaffVM>().ReverseMap();
         
@@ -44,7 +47,7 @@ namespace UniversitySystem.Helpers
 
             CreateMap<Semester, SemesterVM>().ReverseMap();
 
-
+            CreateMap<DepStuPayment, DepartmentVM>().ReverseMap();
         }
     }
 }
