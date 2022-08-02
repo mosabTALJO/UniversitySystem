@@ -6,7 +6,7 @@
         public int DepStuId { get; set; }
         public int SemAmntID { get; set; }
         public virtual DepartmentStudent DepStu { get; set; }
-        public virtual SemesterAmount SemAmnt { get; set; }
-        public double total { get; set; }
+        //public virtual SemesterAmount SemAmnt { get; set; }
+        public double Total { get; set; }
     }
 }

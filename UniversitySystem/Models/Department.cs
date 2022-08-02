@@ -6,5 +6,6 @@
         public string Name { get; set; }
         public virtual ICollection<DepartmentSemesterCourse> Semesters { get; set; }
         public virtual ICollection<DepartmentStudent> Students { get; set; }
+        public virtual ICollection<SemesterAmount> SemesterAmounts { get; set; }
     }
 }

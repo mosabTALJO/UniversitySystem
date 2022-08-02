@@ -3,6 +3,7 @@ using System.Linq;
 using UniversitySystem.Models;
 using UniversitySystem.ViewModels;
 using UniversitySystem.ViewModels.DepartmentSemesterCourseVM;
+using UniversitySystem.ViewModels.DepartmentStudentVMs;
 using UniversitySystem.ViewModels.EmployeeVM;
 using UniversitySystem.ViewModels.SalaryVMs;
 using UniversitySystem.ViewModels.SemesterCourseTeacherVMs;
@@ -26,6 +27,8 @@ namespace UniversitySystem.Helpers
 
             CreateMap<DepartmentStudent, DepartmentStudentVM>().ForMember(dest => dest.SupervisorName, opt => opt.MapFrom(src => src.Supervisor.FirstName + " " + src.Supervisor.LastName))
                                                                .ForMember(dest => dest.StudentFirstName , opt => opt.MapFrom(src => src.Student.FirstName)).ReverseMap();
+            CreateMap<DepartmentStudent, DepartmentStudentPostVM>().ReverseMap();
+            CreateMap<DepartmentStudent, DepartmentStudentWithStuVM>().ForMember(dest => dest.SupervisorName, opt => opt.MapFrom(src => src.Supervisor.FirstName + " " + src.Supervisor.LastName));
 
             CreateMap<Course, CourseVM>().ReverseMap();
 

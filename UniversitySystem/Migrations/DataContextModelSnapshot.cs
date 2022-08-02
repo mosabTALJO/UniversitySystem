@@ -160,6 +160,30 @@ namespace UniversitySystem.Migrations
                     b.ToTable("DepartmentStudents");
                 });
 
+            modelBuilder.Entity("UniversitySystem.Models.DepStuPayment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("DepStuId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SemAmntID")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Total")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepStuId");
+
+                    b.ToTable("DepStuPayments");
+                });
+
             modelBuilder.Entity("UniversitySystem.Models.Employee", b =>
                 {
                     b.Property<int>("Id")
@@ -259,6 +283,32 @@ namespace UniversitySystem.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Semesters");
+                });
+
+            modelBuilder.Entity("UniversitySystem.Models.SemesterAmount", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("DepId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<int>("SemId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepId");
+
+                    b.HasIndex("SemId");
+
+                    b.ToTable("SemesterAmounts");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.SemesterCourseTeacher", b =>
@@ -467,6 +517,17 @@ namespace UniversitySystem.Migrations
                     b.Navigation("Supervisor");
                 });
 
+            modelBuilder.Entity("UniversitySystem.Models.DepStuPayment", b =>
+                {
+                    b.HasOne("UniversitySystem.Models.DepartmentStudent", "DepStu")
+                        .WithMany("DepStuPayments")
+                        .HasForeignKey("DepStuId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DepStu");
+                });
+
             modelBuilder.Entity("UniversitySystem.Models.ManagementStaff", b =>
                 {
                     b.HasOne("UniversitySystem.Models.Employee", "Employee")
@@ -487,6 +548,25 @@ namespace UniversitySystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("UniversitySystem.Models.SemesterAmount", b =>
+                {
+                    b.HasOne("UniversitySystem.Models.Department", "Dep")
+                        .WithMany("SemesterAmounts")
+                        .HasForeignKey("DepId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("UniversitySystem.Models.Semester", "Sem")
+                        .WithMany("SemesterAmounts")
+                        .HasForeignKey("SemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dep");
+
+                    b.Navigation("Sem");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.SemesterCourseTeacher", b =>
@@ -558,6 +638,8 @@ namespace UniversitySystem.Migrations
 
             modelBuilder.Entity("UniversitySystem.Models.Department", b =>
                 {
+                    b.Navigation("SemesterAmounts");
+
                     b.Navigation("Semesters");
 
                     b.Navigation("Students");
@@ -574,6 +656,8 @@ namespace UniversitySystem.Migrations
 
             modelBuilder.Entity("UniversitySystem.Models.DepartmentStudent", b =>
                 {
+                    b.Navigation("DepStuPayments");
+
                     b.Navigation("TakenCourses");
                 });
 
@@ -591,6 +675,8 @@ namespace UniversitySystem.Migrations
             modelBuilder.Entity("UniversitySystem.Models.Semester", b =>
                 {
                     b.Navigation("DepSemCourses");
+
+                    b.Navigation("SemesterAmounts");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Student", b =>

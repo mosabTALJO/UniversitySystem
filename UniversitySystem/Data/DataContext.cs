@@ -26,7 +26,7 @@ namespace UniversitySystem.Data
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<WeekProgram> WeekPrograms { get; set; }
         public DbSet<Semester> Semesters { get; set; }
-        public DbSet<DepStuPayment> depStuPayments { get; set; }
-        public DbSet<SemesterAmount> semesterAmounts { get; set; }
+        public DbSet<DepStuPayment> DepStuPayments { get; set; }
+        public DbSet<SemesterAmount> SemesterAmounts { get; set; }
     }
 }

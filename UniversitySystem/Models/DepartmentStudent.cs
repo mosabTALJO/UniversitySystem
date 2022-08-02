@@ -14,6 +14,7 @@
         public bool IsActive { get; set; }
         public int Year { get; set; }
         public virtual ICollection<TakenCourse> TakenCourses { get; set; }
+        public virtual ICollection<DepStuPayment> DepStuPayments { get; set; }
         //public virtual ICollection<Attendance> Attendances { get; set; }
     }
 }

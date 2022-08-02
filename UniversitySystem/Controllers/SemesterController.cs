@@ -52,7 +52,7 @@ namespace UniversitySystem.Controllers
 
             sem.Year = semesterVM.Year;
             sem.GuzBaharYaz = semesterVM.GuzBaharYaz;
-            sem.Price = semesterVM.Price;
+            //sem.Price = semesterVM.Price;
             await _context.SaveChangesAsync();
             return Ok(sem.GuzBaharYaz);
         }

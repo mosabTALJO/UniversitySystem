@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using UniversitySystem.Data;
 using UniversitySystem.Models;
 using UniversitySystem.ViewModels;
+using UniversitySystem.ViewModels.DepartmentStudentVMs;
 
 namespace UniversitySystem.Controllers
 {
@@ -20,7 +21,7 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{DepId}")]  // Search for students by department id and year 
+        [HttpGet("{DepId}")] //works // Search for students by department id and year 
         public async Task<ActionResult<List<DepartmentStudentVM>>> Get(int DepId, int? year = null)
         {
             if (year != null)
@@ -28,16 +29,25 @@ namespace UniversitySystem.Controllers
             return await _context.DepartmentStudents.ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).ToListAsync();
         }
 
-        [HttpGet("studentName")]// this is not working whatt ever is the name he is going null
-        public async Task<ActionResult<List<StudentVM>>> GetStudnt(string StdnNm)
+        [HttpGet("byId/{StuId}")]  //works
+        public async Task<ActionResult<StudentVM>> GetStudnt(int StuId)
         {
-            var name = await _context.Students.ProjectTo<StudentVM>(_mapper.ConfigurationProvider).Where(nm => nm.FirstName == StdnNm).ToListAsync();
-            if (name != null)
-                return NotFound("No student with tis name");
-            return Ok(name);
+            var stu = await _context.Students.ProjectTo<StudentVM>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == StuId);
+            if (stu == null)
+                return NotFound("No student with this id");
+            return Ok(stu);
         }
 
-        [HttpPost ("NewStudent")]  // authentaction required      //add new student
+        [HttpGet("byName/{StdnNm}")] //works
+        public async Task<ActionResult<List<StudentVM>>> GetStudnt(string StdnNm)
+        {
+            var stu = await _context.Students.ProjectTo<StudentVM>(_mapper.ConfigurationProvider).Where(x => x.FirstName.Contains(StdnNm)).ToListAsync();
+            if (stu == null)
+                return NotFound("No student with this name");
+            return Ok(stu);
+        }
+
+        [HttpPost ("NewStudent")] //works // authentaction required      //add new student
         public async Task<ActionResult<int>> Post(StudentVM studentVM, int DepId, bool year, int supervisorId)
         {
             studentVM.Id = 0;
@@ -62,7 +72,7 @@ namespace UniversitySystem.Controllers
             return Ok(student.Id);
         }
 
-        [HttpPut("{StudentId}")] // authentaction required   //Edit student info by id
+        [HttpPut("{StudentId}")]  //works // authentaction required   //Edit student info by id
         public async Task<ActionResult<bool>> Put(int StudentId, [FromBody] StudentVM studentVM, 
                                                                  int depId,
                                                                  DateTime graduationDate,
@@ -106,10 +116,16 @@ namespace UniversitySystem.Controllers
             return Ok(true);
         }
 
-        [HttpPost("Double major student")] // this is not working  "the problem is he is seting the student adress null "
-        public async Task<ActionResult<int>> AddSeconedMajorStudent(DepartmentStudentVM DepartmentStudentVM)
+        [HttpPost("DoubleMajorStudent")] // this is not working  "the problem is he is seting the student adress null "
+        public async Task<ActionResult<int>> AddSeconedMajorStudent(DepartmentStudentPostVM departmentStudentVM)
         {
-            var major = _mapper.Map<DepartmentStudent>(DepartmentStudentVM);
+            var stu = await _context.Students.FirstOrDefaultAsync(x => x.Id == departmentStudentVM.StudentId);
+            if (stu == null)
+                return NotFound("wrong id");
+            if (stu.DepartmentStudents.Any(x => x.DepartmentId == departmentStudentVM.DepartmentId))
+                return BadRequest("this student is already enrolled in this department");
+
+            var major = _mapper.Map<DepartmentStudent>(departmentStudentVM);
             _context.DepartmentStudents.Add(major);
             await _context.SaveChangesAsync();
             return Ok(major.StudentId);

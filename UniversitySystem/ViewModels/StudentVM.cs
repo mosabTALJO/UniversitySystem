@@ -1,4 +1,6 @@
-﻿namespace UniversitySystem.ViewModels
+﻿using UniversitySystem.ViewModels.DepartmentStudentVMs;
+
+namespace UniversitySystem.ViewModels
 {
     public class StudentVM
     {
@@ -8,7 +10,7 @@
         public string Address { get; set; }
         public string Email { get; set; }
         public long PhoneNumber { get; set; }
-        //public string[] Department { get; set; }
+        public List<DepartmentStudentWithStuVM> DepStus { get; set; }
 
     }
 }

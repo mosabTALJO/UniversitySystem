@@ -1,4 +1,6 @@
-﻿namespace UniversitySystem.ViewModels.EmployeeVM
+﻿using UniversitySystem.ViewModels.DepartmentStudentVMs;
+
+namespace UniversitySystem.ViewModels.EmployeeVM
 {
     public class EmployeeVM
     {
