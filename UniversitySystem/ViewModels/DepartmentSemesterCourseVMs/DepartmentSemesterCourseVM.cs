@@ -1,4 +1,5 @@
 ﻿using UniversitySystem.ViewModels.SemesterCourseTeacherVMs;
+using UniversitySystem.ViewModels.WeekProgramVMs;
 
 namespace UniversitySystem.ViewModels.DepartmentSemesterCourseVM
 {
