@@ -50,7 +50,7 @@ namespace UniversitySystem.Helpers
 
             CreateMap<Semester, SemesterVM>().ReverseMap();
 
-            CreateMap<DepStuPayment, DepartmentVM>().ReverseMap();
+            CreateMap<DepStuPayment, DepStuPaymentVM>().ReverseMap();
 
             CreateMap<SemesterAmount , SemesterAmountVM>().ReverseMap();
         }

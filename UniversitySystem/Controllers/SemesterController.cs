@@ -34,9 +34,9 @@ namespace UniversitySystem.Controllers
         public async Task<ActionResult<List<SemesterVM>>> GetSem(
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 20,
-            [FromQuery] int? year = null)
+            [FromQuery] int year = 0)
         {
-            if (year == null)
+            if (year != 0)
                 return Ok(await _context.Semesters.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterVM>(_mapper.ConfigurationProvider).Where(c => c.Year == year).ToListAsync());
             return Ok(await _context.Semesters.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
