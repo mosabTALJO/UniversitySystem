@@ -12,8 +12,8 @@ using UniversitySystem.Data;
 namespace UniversitySystem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220802125714_payments")]
-    partial class payments
+    [Migration("20220802144655_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

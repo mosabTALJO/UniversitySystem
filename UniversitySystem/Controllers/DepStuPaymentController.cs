@@ -20,27 +20,55 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost]
+        [HttpPost] // it works
         public async Task<ActionResult<bool>> AddStudentPayment(int StdId , int SemId , int DepId , DepStuPaymentVM depStuPaymentVM)
         {
+            int ttlcrdt = 0;
+
             var record = _mapper.Map<DepStuPayment>(depStuPaymentVM);
+            
             var student = await _context.DepartmentStudents.FirstOrDefaultAsync(s => s.StudentId == StdId && s.IsActive == true);
-            var amount = await _context.SemesterAmounts.FirstOrDefaultAsync(a => a.SemId == SemId && a.DepId == DepId);
-            if (student == null || amount == null) return NotFound("Somthing of the inputs is wrong");
+            var amount = await _context.SemesterAmounts.Include(sem => sem.Sem).FirstOrDefaultAsync(a => a.SemId == SemId && a.DepId == DepId);
+            var courses = await _context.TakenCourses.Include(dsc => dsc.DepSemCourse).Where(c => c.DepStudentId == StdId && c.Grade == null).ToListAsync();
+            
+            foreach (var course in courses)
+            {
+                ttlcrdt += course.DepSemCourse.Credit;
+            }
+            
+            if (student == null || amount == null) 
+            {
+                return NotFound("Somthing of the inputs is wrong");                
+            }
+            record.Total = amount.Price;
+            if (amount.Sem.GuzBaharYaz.Contains("yaz")) //Object reference not set to an instance of an object
+            {
+                record.Total = amount.Price * ttlcrdt;                
+            }            
             record.DepStuId = StdId;
             record.SemAmntID = SemId;
-            record.Total = amount.Price;
+
             await _context.DepStuPayments.AddAsync(record);
             await _context.SaveChangesAsync();
             return Ok(record.Id);
         }
 
-        [HttpGet]
+        [HttpGet] // it works
         public async Task<ActionResult<List<DepStuPaymentVM>>> GetStudentPayment(int StdId = 0 )
         {
             if (StdId != 0)
                 return Ok(await _context.DepStuPayments.ProjectTo<DepStuPaymentVM>(_mapper.ConfigurationProvider).Where(c => c.DepStuId == StdId).ToListAsync());
             return Ok(await _context.DepStuPayments.ProjectTo<DepStuPaymentVM>(_mapper.ConfigurationProvider).ToListAsync());
+        }
+
+        [HttpDelete] // it works
+        public async Task<ActionResult<bool>> DltPayment(int studId , int semId)
+        {
+            var delt = await _context.DepStuPayments.FirstOrDefaultAsync(d => d.DepStuId == studId && d.SemAmntID == semId);
+            if (delt == null) return NotFound("NO PAYMENT WITH THIS ID");
+            _context.DepStuPayments.Remove(delt);
+            await _context.SaveChangesAsync();
+            return Ok("true");
         }
 
         
