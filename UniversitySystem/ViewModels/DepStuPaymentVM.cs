@@ -6,5 +6,6 @@
         public int DepStuId { get; set; }
         public int SemAmntID { get; set; }
         public double total { get; set; }
+        public bool IsPayed { get; set; }
     }
 }

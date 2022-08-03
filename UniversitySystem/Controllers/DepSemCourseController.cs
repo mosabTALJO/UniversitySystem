@@ -49,7 +49,7 @@ namespace UniversitySystem.Controllers
             return Ok(_context.DepartmentSemesterCourses.Where(c => c.CourseId == Id).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider));
         }
 
-        [HttpPost("NewDepartmentSemesterCourse")]
+        [HttpPost("NewDepartmentSemesterCourse")] // not adding max student amount
         public async Task<ActionResult<int>> Post([FromBody] DepartmentSemesterCoursePostVM DepSemCourseVM)
         {
             var DepSemCourse = _mapper.Map<DepartmentSemesterCourse>(DepSemCourseVM);

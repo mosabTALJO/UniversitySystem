@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using UniversitySystem.Data;
 using UniversitySystem.Models;
 using UniversitySystem.ViewModels;
+using static UniversitySystem.Controllers.DepStuPaymentController;
 
 namespace UniversitySystem.Controllers
 {
@@ -20,11 +21,30 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost] 
-        public async Task<ActionResult<int>> AddSemAmnt(SemesterAmountVM semesterAmountVM)
+        [HttpPost]  // when this get executed all studedents gets a new records  =====>>>>>>  "not done yet" <<<<========
+        public async Task<ActionResult<int>> AddSemAmnt(SemesterAmountVM semesterAmountVM , int SemId, int DepId)
         {
             var semamnt = _mapper.Map<SemesterAmount>(semesterAmountVM);
+            semamnt.SemId = SemId;
+            semamnt.DepId = DepId;
             await _context.SemesterAmounts.AddAsync(semamnt);
+            await _context.SaveChangesAsync();
+
+            var depStuList = await _context.DepartmentStudents.Include(dest => dest.Department)
+                                                              .ThenInclude(dest => dest.Students)
+                                                              .ThenInclude(dest => dest.Supervisor).Where(ds => ds.DepartmentId == DepId && ds.IsActive).ToListAsync();
+            
+            foreach (var depStu in depStuList)
+            {
+                var depStuPayment = new DepStuPayment
+                {
+                    DepStuId = depStu.Id,
+                    IsPayed = false,
+                    SemAmntID = semamnt.Id,
+                    Total = semamnt.Price
+                };
+                await AutoAddStudentPayment(depStu.Id, SemId, DepId, semamnt.Price , _context, _mapper, depStuPayment);
+            } //Object reference not set to an instance of an object.
             await _context.SaveChangesAsync();  
             return Ok(semamnt.Id);
         }
