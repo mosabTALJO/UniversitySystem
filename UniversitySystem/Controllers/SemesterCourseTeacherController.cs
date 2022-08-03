@@ -10,6 +10,7 @@ namespace UniversitySystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    ///////////////////////////////////////////////////////////////// all works /////////////////////////////////////////////////////////////////
     public class SemesterCourseTeacherController : Controller
     {
         private readonly DataContext _context;
@@ -21,25 +22,33 @@ namespace UniversitySystem.Controllers
         }
 
         [HttpGet("{teacherId}")] // works
-        public async Task<ActionResult<List<SemesterCourseTeacherVM>>> SearchCourseTeacher(int teacherId)
+        public async Task<ActionResult<List<SemesterCourseTeacherVM>>> SearchCourseTeacher(int teacherId,
+                                                                                           [FromQuery] int pageNumber = 1,
+                                                                                           [FromQuery] int pageSize = 20)
         {
             var teacher = await _context.Teachers.FirstOrDefaultAsync(c => c.Id == teacherId);
             if (teacher == null)
-                return NotFound("NO Course with id like this");
+                return NotFound("NO teacher with id like this");
 
-            var semCourTeacherList = await _context.SemesterCourseTeachers.Where(sct => sct.TeacherId == teacherId).ToListAsync();
-            var semCourTeacherVMList = new List<SemesterCourseTeacherVM>();
-            foreach (var item in semCourTeacherList)
-            {
-                semCourTeacherVMList.Add(_mapper.Map<SemesterCourseTeacherVM>(item));
-            }
+            var semCourTeacherVMList = await _context.SemesterCourseTeachers.Where(sct => sct.TeacherId == teacherId).Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterCourseTeacherVM>(_mapper.ConfigurationProvider).ToListAsync();
+            return Ok(semCourTeacherVMList);
+        }
+        
+        [HttpGet("onlyActives/{teacherId}")] // works
+        public async Task<ActionResult<List<SemesterCourseTeacherVM>>> SearchActiveCourseTeacher(int teacherId)
+        {
+            var teacher = await _context.Teachers.FirstOrDefaultAsync(c => c.Id == teacherId);
+            if (teacher == null)
+                return NotFound("NO teacher with id like this");
+
+            var semCourTeacherVMList = await _context.SemesterCourseTeachers.Where(sct => sct.TeacherId == teacherId && sct.EndDate > DateTime.Now).ProjectTo<SemesterCourseTeacherVM>(_mapper.ConfigurationProvider).ToListAsync();
             return Ok(semCourTeacherVMList);
         }
 
         [HttpPost("AddCourseToTeacher")] // it works
         public async Task<ActionResult<int>> AddCourseTeacher([FromBody] SemesterCourseTeacherPostVM SemesterCourseTeacherVM)
         {
-            var DepSemcourse = await _context.DepartmentSemesterCourses.Where(dsm => dsm.CourseId == SemesterCourseTeacherVM.CourseId).FirstOrDefaultAsync(x => x.EndDate > DateTime.Now);
+            var DepSemcourse = await _context.DepartmentSemesterCourses.Where(dsm => dsm.Id == SemesterCourseTeacherVM.DepSemCourseId).FirstOrDefaultAsync(x => x.EndDate > DateTime.Now);
             if (DepSemcourse == null)
                 return BadRequest("this course doesn't exist or its time has ended");
 
@@ -59,24 +68,24 @@ namespace UniversitySystem.Controllers
             return Ok(NewCourseTeacher.Id);
         }
 
-        [HttpPut("{ID}")] // it works
-        public async Task<ActionResult<bool>> UpdateCourseTeacher(int ID, [FromBody] SemesterCourseTeacherVM SemesterCourseTeacherVM)
+        [HttpPut("{Id}")] // it works
+        public async Task<ActionResult<bool>> UpdateCourseTeacher(int Id, [FromBody] SemesterCourseTeacherPostVM semesterCourseTeacherVM)
         {
-            var EditCourse = await _context.SemesterCourseTeachers.FirstOrDefaultAsync(c => c.Id == ID);
+            var EditCourse = await _context.SemesterCourseTeachers.FirstOrDefaultAsync(c => c.Id == Id);
             if (EditCourse == null) return NotFound("nothing found with this ID");
 
-            EditCourse.StartDate = SemesterCourseTeacherVM.StartDate;
-            EditCourse.EndDate = SemesterCourseTeacherVM.EndDate;
+            EditCourse.StartDate = semesterCourseTeacherVM.StartDate;
+            EditCourse.EndDate = semesterCourseTeacherVM.EndDate;
                         
             //_context.SemesterCourseTeachers.Update(EditCourse);
             await _context.SaveChangesAsync();
             return Ok(true);
         }
 
-        [HttpDelete("{ID}")]   //works
-        public async Task<ActionResult<bool>> Delete(int ID)
+        [HttpDelete("{Id}")]   //works
+        public async Task<ActionResult<bool>> Delete(int Id)
         {
-            var DeleteCourse = await _context.SemesterCourseTeachers.FirstOrDefaultAsync(c => c.Id == ID);
+            var DeleteCourse = await _context.SemesterCourseTeachers.FirstOrDefaultAsync(c => c.Id == Id);
             if (DeleteCourse == null) return NotFound("there is no courses with this ID ");
             _context.SemesterCourseTeachers.Remove(DeleteCourse);
             await _context.SaveChangesAsync();

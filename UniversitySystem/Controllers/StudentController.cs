@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversitySystem.Data;
 using UniversitySystem.Models;
-using UniversitySystem.ViewModels;
 using UniversitySystem.ViewModels.DepartmentStudentVMs;
+using UniversitySystem.ViewModels.StudentVMs;
 
 namespace UniversitySystem.Controllers
 {
@@ -48,7 +48,7 @@ namespace UniversitySystem.Controllers
         }
 
         [HttpPost ("NewStudent")] //works // authentaction required      //add new student
-        public async Task<ActionResult<int>> Post(StudentVM studentVM, int DepId, bool year, int supervisorId)
+        public async Task<ActionResult<int>> Post(StudentPostVM studentVM, int DepId, bool year, int supervisorId)
         {
             studentVM.Id = 0;
             int strtyr;
@@ -73,7 +73,7 @@ namespace UniversitySystem.Controllers
         }
 
         [HttpPut("{StudentId}")]  //works // authentaction required   //Edit student info by id
-        public async Task<ActionResult<bool>> Put(int StudentId, [FromBody] StudentVM studentVM, 
+        public async Task<ActionResult<bool>> Put(int StudentId, [FromBody] StudentPostVM studentVM, 
                                                                  int depId,
                                                                  DateTime graduationDate,
                                                                  bool isActive,

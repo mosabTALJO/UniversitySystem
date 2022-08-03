@@ -5,6 +5,7 @@ namespace UniversitySystem.ViewModels.DepartmentSemesterCourseVM
 {
     public class DepartmentSemesterCourseVM
     {
+        public int Id { get; set; }
         public int CourseId { get; set; }
         public int DepartmentId { get; set; }
         public string Course { get; set; }

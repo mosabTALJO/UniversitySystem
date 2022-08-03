@@ -27,7 +27,7 @@ namespace UniversitySystem.Controllers
             [FromQuery] string? search = null)
         {
             if(!string.IsNullOrEmpty(search))
-                return Ok(await _context.Courses.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<CourseVM>(_mapper.ConfigurationProvider).Where(c => c.Name.Contains(search)).ToListAsync());
+                return Ok(await _context.Courses.Where(c => c.Name.Contains(search)).Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<CourseVM>(_mapper.ConfigurationProvider).ToListAsync());
             return Ok(await _context.Courses.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<CourseVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 

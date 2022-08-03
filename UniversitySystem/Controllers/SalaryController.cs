@@ -19,19 +19,19 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("SalaryList/{EmployeeId}")]//works
-        public async Task<ActionResult<List<SalaryVM>>> GetSalary(int EmployeeId)// THIS GET S THE CORRENT SALARY
+        [HttpGet("CurrentSalary/{EmployeeId}")]//works
+        public async Task<ActionResult<List<SalaryVM>>> GetSalary(int EmployeeId)// THIS GETS THE CURRENT SALARY
         {
             var curntsalry = await _context.Salaries.FirstOrDefaultAsync(slry => slry.EmployeeId == EmployeeId && slry.EndDate == null);
             if (curntsalry == null) return NotFound("no corrent salary for this employee");
             return Ok(curntsalry);
         }
 
-        [HttpGet("employeeOldSlarayRecords/{EmployeeId}")] // GET All SALAREIS 
+        [HttpGet("employeeOldSalaryRecords/{EmployeeId}")] // GET All SALAREIS 
         public async Task<ActionResult<List<SalaryVM>>> GetAllSalaries(int EmployeeId)
         {
             var allsalrys = await _context.Salaries.Where(slry => slry.EmployeeId == EmployeeId).ToListAsync();
-            if (allsalrys == null) return NotFound("no salary with this ID");
+            if (allsalrys == null) return NotFound("no salary for this employee");
 
             var allsalryVMlist = new List<SalaryVM>();
             foreach (var salary in allsalrys)

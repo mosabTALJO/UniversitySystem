@@ -8,5 +8,6 @@
         public virtual DepartmentStudent DepStu { get; set; }
         //public virtual SemesterAmount SemAmnt { get; set; }
         public double Total { get; set; }
+        public bool IsPayed { get; set; }
     }
 }

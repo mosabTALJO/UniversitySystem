@@ -11,5 +11,6 @@
         public virtual Teacher? Teacher { get; set; }
         public double? Grade { get; set; }
         public virtual ICollection<Attendance>? Attendances { get; set; }
+        public bool IsApproved { get; set; }
     }
 }

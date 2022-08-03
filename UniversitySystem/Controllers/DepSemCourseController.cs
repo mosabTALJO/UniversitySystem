@@ -21,6 +21,8 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
+        ///////////////////////////////////////////////////all works//////////////////////////////////////////////////
+
         [HttpGet("GetList/{DepId}")]
         public async Task<ActionResult<List<DepartmentSemesterCourseVM>>> Get(
             int DepId,
@@ -37,27 +39,31 @@ namespace UniversitySystem.Controllers
             return Ok(await _context.DepartmentSemesterCourses.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).ToListAsync());
         }
 
-        [HttpGet("{Id}")] //gets departments that opened a certain course
+        [HttpGet("{Id}")] //gets departments that opened a certain course //this seems unnecessary
         public async Task<ActionResult<List<DepartmentSemesterCourseVM>>> Get(int Id)
         {
             var c = await _context.Courses.FirstOrDefaultAsync(c => c.Id == Id);
             if (c == null)
                 return NotFound("Id not found");
 
-            return Ok(_context.DepartmentSemesterCourses.ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider).Where(c => c.CourseId == Id));
+            return Ok(_context.DepartmentSemesterCourses.Where(c => c.CourseId == Id).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider));
         }
 
-        [HttpPost("NewDepartmentSemesterCourse")] // only one body can be sent to a request
+        [HttpPost("NewDepartmentSemesterCourse")]
         public async Task<ActionResult<int>> Post([FromBody] DepartmentSemesterCoursePostVM DepSemCourseVM)
         {
             var DepSemCourse = _mapper.Map<DepartmentSemesterCourse>(DepSemCourseVM);
+
+            if(_context.DepartmentSemesterCourses.Any(x => x.CourseId == DepSemCourse.CourseId && x.EndDate != null))
+                return BadRequest("this course is already open");
+
             await _context.DepartmentSemesterCourses.AddAsync(DepSemCourse);
             await _context.SaveChangesAsync();
             return Ok(DepSemCourse.Id);
         }
 
         [HttpPut("{DepSemCourseId}")]
-        public async Task<ActionResult<bool>> Post(int DepSemCourseId, [FromBody] DepartmentSemesterCoursePostVM DepSemCourseVM)
+        public async Task<ActionResult<bool>> Put(int DepSemCourseId, [FromBody] DepartmentSemesterCoursePostVM DepSemCourseVM)
         {
             var depSemCourse = await _context.DepartmentSemesterCourses.FirstOrDefaultAsync(dsm => dsm.Id == DepSemCourseId);
             if (depSemCourse == null)
@@ -65,9 +71,20 @@ namespace UniversitySystem.Controllers
 
             depSemCourse.Credit = DepSemCourseVM.Credit;
             depSemCourse.MaxStudents = DepSemCourseVM.StudentsAmount;
-            depSemCourse.StartDate = DepSemCourseVM.StartDate;
             depSemCourse.EndDate = DepSemCourseVM.EndDate;
 
+            await _context.SaveChangesAsync();
+            return Ok(true);
+        }
+
+        [HttpDelete("{DepSemCourseId}")]
+        public async Task<ActionResult<bool>> Delete(int DepSemCourseId)
+        {
+            var depSemCourse = await _context.DepartmentSemesterCourses.FirstOrDefaultAsync(dsm => dsm.Id == DepSemCourseId);
+            if (depSemCourse == null)
+                return NotFound("Id not found");
+
+            _context.DepartmentSemesterCourses.Remove(depSemCourse);
             await _context.SaveChangesAsync();
             return Ok(true);
         }

@@ -40,7 +40,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("TakenCourseId");
 
-                    b.ToTable("Attendances");
+                    b.ToTable("Attendances", (string)null);
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Course", b =>
@@ -57,7 +57,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Courses");
+                    b.ToTable("Courses", (string)null);
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Department", b =>
@@ -74,7 +74,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.DepartmentSemesterCourse", b =>
@@ -117,7 +117,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("SemesterId");
 
-                    b.ToTable("DepartmentSemesterCourses");
+                    b.ToTable("DepartmentSemesterCourses", (string)null);
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.DepartmentStudent", b =>
@@ -157,7 +157,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("SupervisorId");
 
-                    b.ToTable("DepartmentStudents");
+                    b.ToTable("DepartmentStudents", (string)null);
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.DepStuPayment", b =>
@@ -181,7 +181,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("DepStuId");
 
-                    b.ToTable("DepStuPayments");
+                    b.ToTable("DepStuPayments", (string)null);
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Employee", b =>
@@ -213,7 +213,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.ManagementStaff", b =>
@@ -231,7 +231,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("ManagementStaffs");
+                    b.ToTable("ManagementStaffs", (string)null);
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Salary", b =>
@@ -262,7 +262,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Salaries");
+                    b.ToTable("Salaries", (string)null);
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Semester", b =>
@@ -282,7 +282,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Semesters");
+                    b.ToTable("Semesters", (string)null);
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.SemesterAmount", b =>
@@ -308,7 +308,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("SemId");
 
-                    b.ToTable("SemesterAmounts");
+                    b.ToTable("SemesterAmounts", (string)null);
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.SemesterCourseTeacher", b =>
@@ -337,7 +337,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("SemesterCourseTeachers");
+                    b.ToTable("SemesterCourseTeachers", (string)null);
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Student", b =>
@@ -369,7 +369,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Students");
+                    b.ToTable("Students", (string)null);
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.TakenCourse", b =>
@@ -403,7 +403,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("TakenCourses");
+                    b.ToTable("TakenCourses", (string)null);
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Teacher", b =>
@@ -421,7 +421,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Teachers");
+                    b.ToTable("Teachers", (string)null);
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.WeekProgram", b =>
@@ -449,7 +449,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("DepSemCourseId");
 
-                    b.ToTable("WeekPrograms");
+                    b.ToTable("WeekPrograms", (string)null);
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Attendance", b =>

@@ -25,12 +25,12 @@ namespace UniversitySystem.Controllers
         {
             var record = _mapper.Map<DepStuPayment>(depStuPaymentVM);
             var student = await _context.DepartmentStudents.FirstOrDefaultAsync(s => s.StudentId == StdId && s.IsActive == true);
-            var amount = await _context.semesterAmounts.FirstOrDefaultAsync(a => a.SemId == SemId && a.DepId == DepId);
+            var amount = await _context.SemesterAmounts.FirstOrDefaultAsync(a => a.SemId == SemId && a.DepId == DepId);
             if (student == null || amount == null) return NotFound("Somthing of the inputs is wrong");
             record.DepStuId = StdId;
             record.SemAmntID = SemId;
-            record.total = amount.Price;
-            await _context.depStuPayments.AddAsync(record);
+            record.Total = amount.Price;
+            await _context.DepStuPayments.AddAsync(record);
             await _context.SaveChangesAsync();
             return Ok(record.Id);
         }
@@ -39,8 +39,8 @@ namespace UniversitySystem.Controllers
         public async Task<ActionResult<List<DepStuPaymentVM>>> GetStudentPayment(int StdId = 0 )
         {
             if (StdId != 0)
-                return Ok(await _context.depStuPayments.ProjectTo<DepStuPaymentVM>(_mapper.ConfigurationProvider).Where(c => c.DepStuId == StdId).ToListAsync());
-            return Ok(await _context.depStuPayments.ProjectTo<DepStuPaymentVM>(_mapper.ConfigurationProvider).ToListAsync());
+                return Ok(await _context.DepStuPayments.ProjectTo<DepStuPaymentVM>(_mapper.ConfigurationProvider).Where(c => c.DepStuId == StdId).ToListAsync());
+            return Ok(await _context.DepStuPayments.ProjectTo<DepStuPaymentVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 
         

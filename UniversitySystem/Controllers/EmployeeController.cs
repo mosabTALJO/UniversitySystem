@@ -39,7 +39,7 @@ namespace UniversitySystem.Controllers
             var employee = _mapper.Map<Employee>(EmployeeVM);            
             _context.Employees.Add(employee);            
             await _context.SaveChangesAsync();
-            _context.Salaries.Add(new Salary { StartDate = DateTime.Now , EndDate = null, EmployeeId = employee.Id,Amount = amount , Rank = rank });
+            _context.Salaries.Add(new Salary { StartDate = DateTime.Now, EndDate = null, EmployeeId = employee.Id, Amount = amount, Rank = rank });
             _context.Teachers.Add(new Teacher { EmployeeId = employee.Id });
             await _context.SaveChangesAsync();
             return Ok(employee.Id);

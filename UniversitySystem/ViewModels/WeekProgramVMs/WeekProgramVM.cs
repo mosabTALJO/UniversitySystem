@@ -2,6 +2,7 @@
 {
     public class WeekProgramVM
     {
+        public int Id { get; set; }
         public int DepSemCourseId { get; set; }
         public string CourseName { get; set; }
         public string Day { get; set; }

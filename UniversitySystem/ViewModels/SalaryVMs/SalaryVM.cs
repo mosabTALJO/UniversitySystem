@@ -4,6 +4,7 @@ namespace UniversitySystem.ViewModels.SalaryVMs
 {
     public class SalaryVM
     {
+        public int Id { get; set; }
         public string Rank { get; set; }
         public double Amount { get; set; }
         public DateTime StartDate { get; set; }

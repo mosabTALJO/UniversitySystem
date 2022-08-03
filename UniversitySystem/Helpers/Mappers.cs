@@ -7,6 +7,7 @@ using UniversitySystem.ViewModels.DepartmentStudentVMs;
 using UniversitySystem.ViewModels.EmployeeVM;
 using UniversitySystem.ViewModels.SalaryVMs;
 using UniversitySystem.ViewModels.SemesterCourseTeacherVMs;
+using UniversitySystem.ViewModels.StudentVMs;
 using UniversitySystem.ViewModels.TakenCourseVMs;
 using UniversitySystem.ViewModels.WeekProgramVMs;
 
@@ -40,7 +41,8 @@ namespace UniversitySystem.Helpers
 
             CreateMap<Teacher, TeacherVM>().ForMember(dest => dest.SemesterCourseTeachers , opt => opt.MapFrom(src => src.SemesterCourseTeachers)).ReverseMap(); // we may have some problems here 
 
-            CreateMap<Student, StudentVM>().ReverseMap(); 
+            CreateMap<Student, StudentVM>().ForMember(dest => dest.DepStus, opt => opt.MapFrom(src => src.DepartmentStudents)).ReverseMap(); 
+            CreateMap<Student, StudentPostVM>().ReverseMap(); 
         
             CreateMap<ManagementStaff, ManagementStaffVM>().ReverseMap();
         
