@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversitySystem.Data;
@@ -9,6 +10,7 @@ namespace UniversitySystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    ///////////////////////////////////////////////////////////// all works /////////////////////////////////////////////////////////////
     public class SalaryController : Controller
     {
         private readonly DataContext _context;
@@ -20,9 +22,9 @@ namespace UniversitySystem.Controllers
         }
 
         [HttpGet("CurrentSalary/{EmployeeId}")]//works
-        public async Task<ActionResult<List<SalaryVM>>> GetSalary(int EmployeeId)// THIS GETS THE CURRENT SALARY
+        public async Task<ActionResult<SalaryVM>> GetSalary(int EmployeeId)// THIS GETS THE CURRENT SALARY
         {
-            var curntsalry = await _context.Salaries.FirstOrDefaultAsync(slry => slry.EmployeeId == EmployeeId && slry.EndDate == null);
+            var curntsalry = await _context.Salaries.ProjectTo<SalaryVM>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(slry => slry.EmployeeId == EmployeeId && slry.EndDate == null);
             if (curntsalry == null) return NotFound("no corrent salary for this employee");
             return Ok(curntsalry);
         }
@@ -41,7 +43,7 @@ namespace UniversitySystem.Controllers
             return Ok(allsalryVMlist);
         }
 
-        [HttpPut("EndSalary")] //works sets an end date for the salary
+        [HttpPut("EndSalary")] //works //sets an end date for the salary
         public async Task<ActionResult<bool>> UpdateSalary(int EmployeeId)
         {
             var salry = await _context.Salaries.FirstOrDefaultAsync(s => s.EmployeeId == EmployeeId && s.EndDate == null);
@@ -57,14 +59,24 @@ namespace UniversitySystem.Controllers
         {
             var slry = await _context.Salaries.FirstOrDefaultAsync(s => s.Id == slryID && s.EndDate == null);
             if (slry == null) return NotFound("no record with this id");
+
+            _context.Salaries.Remove(slry);
+            await _context.SaveChangesAsync();
             return Ok("true");
         }
 
         [HttpPost("NewSalaryRecord")] // works  adds new salary record
         public async Task<ActionResult<int>> AddNewSalaryRecord(SalaryVM salaryVM)
         {
+            var emp = await _context.Employees.Include(e => e.Salaries).FirstOrDefaultAsync(e => e.Id == salaryVM.EmployeeId);
+            if (emp == null) return NotFound("no emloyee with this id");
+
+            var currentSalary = emp.Salaries.FirstOrDefault(e => e.EndDate == null);
+            if (currentSalary != null)
+                currentSalary.EndDate = DateTime.Today;
+
+            salaryVM.Id = 0;
             salaryVM.EndDate = null;
-            salaryVM.StartDate = DateTime.Today;
             var slry = _mapper.Map<Salary>(salaryVM);
             await _context.Salaries.AddAsync(slry);
             await _context.SaveChangesAsync();
