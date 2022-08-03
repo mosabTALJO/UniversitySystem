@@ -40,7 +40,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("TakenCourseId");
 
-                    b.ToTable("Attendances", (string)null);
+                    b.ToTable("Attendances");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Course", b =>
@@ -57,7 +57,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Courses", (string)null);
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Department", b =>
@@ -74,7 +74,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Departments", (string)null);
+                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.DepartmentSemesterCourse", b =>
@@ -117,7 +117,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("SemesterId");
 
-                    b.ToTable("DepartmentSemesterCourses", (string)null);
+                    b.ToTable("DepartmentSemesterCourses");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.DepartmentStudent", b =>
@@ -127,6 +127,9 @@ namespace UniversitySystem.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<double>("Balance")
+                        .HasColumnType("float");
 
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
@@ -157,7 +160,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("SupervisorId");
 
-                    b.ToTable("DepartmentStudents", (string)null);
+                    b.ToTable("DepartmentStudents");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.DepStuPayment", b =>
@@ -171,6 +174,9 @@ namespace UniversitySystem.Migrations
                     b.Property<int>("DepStuId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsPayed")
+                        .HasColumnType("bit");
+
                     b.Property<int>("SemAmntID")
                         .HasColumnType("int");
 
@@ -181,7 +187,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("DepStuId");
 
-                    b.ToTable("DepStuPayments", (string)null);
+                    b.ToTable("DepStuPayments");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Employee", b =>
@@ -213,7 +219,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.ManagementStaff", b =>
@@ -231,7 +237,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("ManagementStaffs", (string)null);
+                    b.ToTable("ManagementStaffs");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Salary", b =>
@@ -262,7 +268,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Salaries", (string)null);
+                    b.ToTable("Salaries");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Semester", b =>
@@ -282,7 +288,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Semesters", (string)null);
+                    b.ToTable("Semesters");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.SemesterAmount", b =>
@@ -308,7 +314,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("SemId");
 
-                    b.ToTable("SemesterAmounts", (string)null);
+                    b.ToTable("SemesterAmounts");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.SemesterCourseTeacher", b =>
@@ -337,7 +343,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("SemesterCourseTeachers", (string)null);
+                    b.ToTable("SemesterCourseTeachers");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Student", b =>
@@ -369,7 +375,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Students", (string)null);
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.TakenCourse", b =>
@@ -392,6 +398,9 @@ namespace UniversitySystem.Migrations
                     b.Property<double?>("Grade")
                         .HasColumnType("float");
 
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("TeacherId")
                         .HasColumnType("int");
 
@@ -403,7 +412,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("TakenCourses", (string)null);
+                    b.ToTable("TakenCourses");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Teacher", b =>
@@ -421,7 +430,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Teachers", (string)null);
+                    b.ToTable("Teachers");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.WeekProgram", b =>
@@ -449,7 +458,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("DepSemCourseId");
 
-                    b.ToTable("WeekPrograms", (string)null);
+                    b.ToTable("WeekPrograms");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Attendance", b =>

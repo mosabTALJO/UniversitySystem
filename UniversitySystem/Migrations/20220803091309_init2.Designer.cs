@@ -12,8 +12,8 @@ using UniversitySystem.Data;
 namespace UniversitySystem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220802144655_init")]
-    partial class init
+    [Migration("20220803091309_init2")]
+    partial class init2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -130,6 +130,9 @@ namespace UniversitySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<double>("Balance")
+                        .HasColumnType("float");
+
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
@@ -172,6 +175,9 @@ namespace UniversitySystem.Migrations
 
                     b.Property<int>("DepStuId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsPayed")
+                        .HasColumnType("bit");
 
                     b.Property<int>("SemAmntID")
                         .HasColumnType("int");
@@ -393,6 +399,9 @@ namespace UniversitySystem.Migrations
 
                     b.Property<double?>("Grade")
                         .HasColumnType("float");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("TeacherId")
                         .HasColumnType("int");
