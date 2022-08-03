@@ -66,7 +66,8 @@ namespace UniversitySystem.Controllers
                     Year = strtyr,
                     SupervisorId = supervisorId,
                     EnrollmentDate = DateTime.Today,
-                    IsActive = true
+                    IsActive = true,
+                    Balance = 0
                 });
             await _context.SaveChangesAsync();
             return Ok(student.Id);
@@ -100,6 +101,7 @@ namespace UniversitySystem.Controllers
             DepStu.SupervisorId = supervisorId;
             DepStu.IsActive = isActive;
             DepStu.GraduationDate = graduationDate;
+            DepStu.Balance = DepStu.Balance;
             await _context.SaveChangesAsync();
             return Ok(true);
         }
@@ -130,6 +132,18 @@ namespace UniversitySystem.Controllers
             await _context.SaveChangesAsync();
             return Ok(major.StudentId);
 
+        }
+
+        [HttpPut("AddBalance")] // it works
+        public async Task<ActionResult<int>> PutBalance(int StudentId, 
+                                                        [FromBody] StudentPostVM studentVM,
+                                                        double Amount)
+        {
+            var student = await _context.DepartmentStudents.FirstOrDefaultAsync(s => s.Id == StudentId);
+            if (student == null) return NotFound("no student with this id");
+            student.Balance += Amount;
+            await _context.SaveChangesAsync();
+            return Ok(student.Id);
         }
     }
 }
