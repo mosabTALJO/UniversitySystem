@@ -27,7 +27,7 @@ namespace UniversitySystem.Controllers
 
             var record = _mapper.Map<DepStuPayment>(depStuPaymentVM);
             
-            var student = await _context.DepartmentStudents.FirstOrDefaultAsync(s => s.StudentId == StdId && s.IsActive == true);
+            var student = await _context.DepartmentStudents.FirstOrDefaultAsync(s => s.Id == StdId && s.IsActive == true);
             var amount = await _context.SemesterAmounts.Include(sem => sem.Sem).FirstOrDefaultAsync(a => a.SemId == SemId && a.DepId == DepId);
             var courses = await _context.TakenCourses.Include(dsc => dsc.DepSemCourse).Where(c => c.DepStudentId == StdId && c.Grade == null).ToListAsync();
             

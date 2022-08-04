@@ -10,7 +10,7 @@ namespace UniversitySystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    /////////////////////////////////////////////////////////////    all works        "but when cahge don't forget to edit" /////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////    all works    /////////////////////////////////////////////////////////////
     public class SemesterController : Controller
     {
         private readonly DataContext _context;
@@ -42,7 +42,7 @@ namespace UniversitySystem.Controllers
             return Ok(await _context.Semesters.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 
-        [HttpPut("{SemesterId}")] // when u add the course adding date change this
+        [HttpPut("{SemesterId}")] 
         public async Task<ActionResult<string>> UpdateSem(            
             [FromBody] SemesterVM semesterVM,
             int SemesterId)

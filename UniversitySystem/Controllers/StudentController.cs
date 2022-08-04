@@ -136,16 +136,44 @@ namespace UniversitySystem.Controllers
 
         }
 
-        [HttpPut("AddBalance")] // it works
-        public async Task<ActionResult<int>> PutBalance(int StudentId, 
-                                                        [FromBody] StudentPostVM studentVM,
+        [HttpPut("AddBalance")] 
+        public async Task<ActionResult<bool>> PutBalance(int DepStudentId, 
                                                         double Amount)
         {
-            var student = await _context.DepartmentStudents.FirstOrDefaultAsync(s => s.Id == StudentId);
+            var student = await _context.DepartmentStudents.FirstOrDefaultAsync(s => s.Id == DepStudentId);
             if (student == null) return NotFound("no student with this id");
             student.Balance += Amount;
+            
             await _context.SaveChangesAsync();
-            return Ok(student.Id);
+
+            var pay = await _context.DepStuPayments.Where(x => x.DepStuId == DepStudentId && x.IsPayed == false).ToListAsync();
+            
+            List<int>? bills = new List<int>();
+            foreach (var payPayment in pay)
+            {              
+                if (student.Balance >= payPayment.Total)
+                {
+                    student.Balance -= payPayment.Total;
+                    payPayment.IsPayed = true;
+                }    
+                else
+                    bills.Add(payPayment.Id);
+            }
+
+            string? notPiad = "the bills with these ids couldn't be paid :";
+            foreach (int bill in bills)
+            {
+                notPiad += " " + bill.ToString();
+            }            
+            
+            await _context.SaveChangesAsync();
+            
+            if (pay.Count == 0)
+                notPiad = "No bills found your balance is : " + student.Balance;
+                return Ok(notPiad );
+            if (bills.Count > 0)
+                return Ok(notPiad);           
+            return Ok(student.Balance);
         }
     }
 }
