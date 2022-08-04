@@ -151,6 +151,27 @@ namespace UniversitySystem.Controllers
             return Ok(true);
         }
 
-        
+        [HttpPut("approve/{DepStuId}")]
+        public async Task<ActionResult<bool>> Approve(int DepStuId)
+        {
+            var depStu = await _context.DepartmentStudents.Include(x => x.DepStuPayments).FirstOrDefaultAsync(x => x.Id == DepStuId);
+            if (depStu == null)
+                return NotFound("worng student id");
+
+            var payment = depStu.DepStuPayments.LastOrDefault();
+            if (payment == null)
+                return BadRequest("no payment found");
+            if (!payment.IsPayed)
+                return BadRequest("the payment isn't complete");
+
+            var takenCourses = await _context.TakenCourses.Where(x => x.DepStudentId == DepStuId).ToListAsync();
+            foreach(var takenCourse in takenCourses)
+            {
+                takenCourse.IsApproved = true;
+            }
+            await _context.SaveChangesAsync();
+
+            return Ok(true);
+        }
     }
 }
