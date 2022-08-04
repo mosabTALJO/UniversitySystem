@@ -334,6 +334,9 @@ namespace UniversitySystem.Migrations
                     b.Property<int>("MaxStudents")
                         .HasColumnType("int");
 
+                    b.Property<int>("NumberOfStudents")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -404,7 +407,7 @@ namespace UniversitySystem.Migrations
                     b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("TeacherId")
+                    b.Property<int?>("SemCourseTeacherId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -413,7 +416,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasIndex("DepartmentStudentId");
 
-                    b.HasIndex("TeacherId");
+                    b.HasIndex("SemCourseTeacherId");
 
                     b.ToTable("TakenCourses");
                 });
@@ -612,13 +615,13 @@ namespace UniversitySystem.Migrations
                         .WithMany("TakenCourses")
                         .HasForeignKey("DepartmentStudentId");
 
-                    b.HasOne("UniversitySystem.Models.Teacher", "Teacher")
+                    b.HasOne("UniversitySystem.Models.SemesterCourseTeacher", "SemCourseTeacher")
                         .WithMany()
-                        .HasForeignKey("TeacherId");
+                        .HasForeignKey("SemCourseTeacherId");
 
                     b.Navigation("DepSemCourse");
 
-                    b.Navigation("Teacher");
+                    b.Navigation("SemCourseTeacher");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.Teacher", b =>

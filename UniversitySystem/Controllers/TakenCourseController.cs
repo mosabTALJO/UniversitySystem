@@ -58,7 +58,7 @@ namespace UniversitySystem.Controllers
             return Ok(await _context.TakenCourses.Where(x => x.DepSemCourseId == DepSemCourseId).ProjectTo<TakenCourseVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 
-        [HttpGet("teacher/{TeacherId}/{CourseId}")] //teacher gets all students (taken courses) who took a course that he teaches
+        [HttpGet("teacher/{TeacherId}/{CourseId}")] //change the ids************** //teacher gets all students (taken courses) who took a course that he teaches
         public async Task<ActionResult<List<TakenCourseVM>>> Get(int TeacherId, int CourseId)
         {
             var depSemCourse = await _context.DepartmentSemesterCourses.FirstOrDefaultAsync(x => x.CourseId == CourseId && x.EndDate == null);
@@ -69,7 +69,7 @@ namespace UniversitySystem.Controllers
             if (semCourTeacher == null)
                 return BadRequest("you don't teach this course");
 
-            var result = await _context.TakenCourses.Where(x => x.TeacherId == semCourTeacher.Id && x.DepSemCourseId == depSemCourse.Id).ToListAsync();
+            var result = await _context.TakenCourses.Where(x => x.SemCourseTeacherId == semCourTeacher.Id && x.DepSemCourseId == depSemCourse.Id).ToListAsync();
             return Ok(result);
         }
 
@@ -93,13 +93,18 @@ namespace UniversitySystem.Controllers
                 return BadRequest("this course has reached its student limit");
             if (depSemCourse.DepartmentId != depStu.DepartmentId)
                 return BadRequest("you are not enrolled in this department");
-            
-            
+
+            var SemCourTeacher = await _context.SemesterCourseTeachers.FirstOrDefaultAsync(x => x.Id == SemCourseTeacherId);
+            if (SemCourTeacher == null)
+                return NotFound("this teacher doesn't teach this course");
+            if (SemCourTeacher.NumberOfStudents >= SemCourTeacher.MaxStudents)
+                return BadRequest("this teacher has reached their max student count");
 
             var takenCourse = new TakenCourse
             {
                 DepStudentId = DepStuId,
-                DepSemCourseId = DepSemCourseId
+                DepSemCourseId = DepSemCourseId,
+                SemCourseTeacherId = SemCourseTeacherId
             };
             await _context.TakenCourses.AddAsync(takenCourse);
             await _context.SaveChangesAsync();
