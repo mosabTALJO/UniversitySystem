@@ -42,16 +42,18 @@ namespace UniversitySystem.Controllers
             return Ok(await _context.Semesters.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 
-        [HttpPut] // when u add the course adding date change this
+        [HttpPut("{SemesterId}")] // when u add the course adding date change this
         public async Task<ActionResult<string>> UpdateSem(            
             [FromBody] SemesterVM semesterVM,
             int SemesterId)
         {
+            semesterVM.Id = SemesterId;
             var sem = await _context.Semesters.FirstOrDefaultAsync(dp => dp.Id == SemesterId);
             if (sem == null)
                 return BadRequest("no semester like this");
-                        
-            
+
+            sem.CourseTakingStartDate = semesterVM.CourseTakingStartDate;
+            sem.CourseTakingEndDate = semesterVM.CourseTakingEndDate;
             await _context.SaveChangesAsync();
             return Ok(sem.GuzBaharYaz);
         }

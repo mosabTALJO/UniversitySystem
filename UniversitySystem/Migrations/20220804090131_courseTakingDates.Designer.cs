@@ -12,8 +12,8 @@ using UniversitySystem.Data;
 namespace UniversitySystem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220804081847_fixedTakenCourseTeacher")]
-    partial class fixedTakenCourseTeacher
+    [Migration("20220804090131_courseTakingDates")]
+    partial class courseTakingDates
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -280,6 +280,12 @@ namespace UniversitySystem.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CourseTakingEndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CourseTakingStartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("GuzBaharYaz")
                         .IsRequired()

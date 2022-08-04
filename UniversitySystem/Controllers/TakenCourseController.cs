@@ -76,6 +76,10 @@ namespace UniversitySystem.Controllers
         [HttpPost("{DepStuId}/{SemCourseTeacherId}")]
         public async Task<ActionResult<int>> Post(int DepStuId, int SemCourseTeacherId)
         {
+            var sem = await _context.Semesters.FirstOrDefaultAsync(x => x.CourseTakingStartDate <= DateTime.Now && x.CourseTakingEndDate >= DateTime.Now);
+            if (sem == null)
+                return BadRequest("course taking time hasn't started or has ended");
+
             var depStu = await _context.DepartmentStudents.Include(ds => ds.TakenCourses).Include(ds => ds.Department).FirstOrDefaultAsync(s => s.Id == DepStuId);
             if (depStu == null)
                 return NotFound("student not found");

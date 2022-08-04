@@ -5,6 +5,7 @@
         public int Id { get; set; }
         public int Year { get; set; }
         public string GuzBaharYaz { get; set; }
-
+        public DateTime CourseTakingStartDate { get; set; }
+        public DateTime CourseTakingEndDate { get; set; }
     }
 }
