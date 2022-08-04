@@ -1,14 +1,18 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversitySystem.Data;
 using UniversitySystem.Models;
+using UniversitySystem.ViewModels.DepartmentStudentVMs;
 using UniversitySystem.ViewModels.TakenCourseVMs;
 
 namespace UniversitySystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //add approving 
+    //add teachers
     public class TakenCourseController : Controller
     {
         private readonly DataContext _context;
@@ -41,7 +45,17 @@ namespace UniversitySystem.Controllers
                     return BadRequest("no courses found in this semester");
             }
 
-            return Ok(await lst.ToListAsync());
+            return Ok(await lst.ProjectTo<TakenCourseVM>(_mapper.ConfigurationProvider).ToListAsync());
+        }
+
+        [HttpGet("courseStudentsList/{DepSemCourseId}")]
+        public async Task<ActionResult<List<TakenCourseVM>>> GetStudentsWhoTookACourse(int DepSemCourseId)
+        {
+            var depSemCourse = await _context.DepartmentSemesterCourses.FirstOrDefaultAsync(x => x.Id == DepSemCourseId);
+            if (depSemCourse == null)
+                return BadRequest("wrong id");
+
+            return Ok(await _context.TakenCourses.Where(x => x.DepSemCourseId == DepSemCourseId).ProjectTo<TakenCourseVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 
         [HttpGet("teacher/{TeacherId}/{CourseId}")] //teacher gets all students (taken courses) who took a course that he teaches
@@ -59,22 +73,32 @@ namespace UniversitySystem.Controllers
             return Ok(result);
         }
 
-        [HttpPost("{StuId}/{DepSemCourseId}")]
-        public async Task<ActionResult<int>> Post(int StuId, int DepSemCourseId)
+        [HttpPost("{DepStuId}/{DepSemCourseId}/{SemCourseTeacherId}")]
+        public async Task<ActionResult<int>> Post(int DepStuId, int DepSemCourseId, int SemCourseTeacherId)
         {
-            var stu = await _context.Students.FirstOrDefaultAsync(s => s.Id == StuId);
-            if (stu == null)
+            var depStu = await _context.DepartmentStudents.Include(ds => ds.TakenCourses).Include(ds => ds.Department).FirstOrDefaultAsync(s => s.Id == DepStuId);
+            if (depStu == null)
                 return NotFound("student not found");
 
+            var stuTakenCourses = await _context.TakenCourses.FirstOrDefaultAsync(x => x.DepSemCourseId == DepSemCourseId && x.DepStudentId == DepStuId);
+            if (stuTakenCourses != null)
+                return BadRequest("you already have this course");
+
             var depSemCourse = await _context.DepartmentSemesterCourses.FirstOrDefaultAsync(dsc => dsc.Id == DepSemCourseId);
-            if (depSemCourse == null || depSemCourse.EndDate != null)
-                return NotFound("the course you are looking for is not found or is not available this semester");
+            if (depSemCourse == null)
+                return NotFound("the course you are looking for is not found");
+            if (depSemCourse.EndDate < DateTime.Now)
+                return NotFound("the course you are looking for is not available this semester");
             if (depSemCourse.NumberOfStudents >= depSemCourse.MaxStudents)
                 return BadRequest("this course has reached its student limit");
+            if (depSemCourse.DepartmentId != depStu.DepartmentId)
+                return BadRequest("you are not enrolled in this department");
+            
+            
 
             var takenCourse = new TakenCourse
             {
-                DepStudentId = StuId,
+                DepStudentId = DepStuId,
                 DepSemCourseId = DepSemCourseId
             };
             await _context.TakenCourses.AddAsync(takenCourse);
@@ -101,18 +125,20 @@ namespace UniversitySystem.Controllers
         [HttpDelete("{TakenCourseId}")]
         public async Task<ActionResult<bool>> Delete(int TakenCourseId)
         {
-            var takenCourse = await _context.TakenCourses.FirstOrDefaultAsync(x => x.Id == TakenCourseId);
+            var takenCourse = await _context.TakenCourses.Include(tc => tc.DepSemCourse).FirstOrDefaultAsync(x => x.Id == TakenCourseId);
             if (takenCourse == null)
                 return NotFound("Id not found");
 
             _context.TakenCourses.Remove(takenCourse);
             await _context.SaveChangesAsync();
 
-            var temp = takenCourse.DepSemCourse;
-            var depSemCour = await _context.DepartmentSemesterCourses.FirstOrDefaultAsync(x => x == temp);
+            //var temp = takenCourse.DepSemCourse;
+            var depSemCour = await _context.DepartmentSemesterCourses.FirstOrDefaultAsync(x => x == takenCourse.DepSemCourse);
             depSemCour.NumberOfStudents--;
             await _context.SaveChangesAsync();
             return Ok(true);
         }
+
+        
     }
 }

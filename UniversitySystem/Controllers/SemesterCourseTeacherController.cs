@@ -33,7 +33,7 @@ namespace UniversitySystem.Controllers
             var semCourTeacherVMList = await _context.SemesterCourseTeachers.Where(sct => sct.TeacherId == teacherId).Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterCourseTeacherVM>(_mapper.ConfigurationProvider).ToListAsync();
             return Ok(semCourTeacherVMList);
         }
-        
+
         [HttpGet("onlyActives/{teacherId}")] // works
         public async Task<ActionResult<List<SemesterCourseTeacherVM>>> SearchActiveCourseTeacher(int teacherId)
         {
@@ -43,6 +43,25 @@ namespace UniversitySystem.Controllers
 
             var semCourTeacherVMList = await _context.SemesterCourseTeachers.Where(sct => sct.TeacherId == teacherId && sct.EndDate > DateTime.Now).ProjectTo<SemesterCourseTeacherVM>(_mapper.ConfigurationProvider).ToListAsync();
             return Ok(semCourTeacherVMList);
+        }
+
+        [HttpGet("teachers/{DepSemCourseId}")]
+        public async Task<ActionResult<List<SemesterCourseTeacherVM>>> GetTeachersGivingACourse(int DepSemCourseId)
+        {
+            var depSemCourse = await _context.DepartmentSemesterCourses.Include(x => x.SemesterCourseTeachers).FirstOrDefaultAsync(x => x.Id == DepSemCourseId);
+            if (depSemCourse == null)
+                return NotFound("wrong id");
+
+            if (depSemCourse.SemesterCourseTeachers == null)
+                return BadRequest("this course has no teachers at the moment");
+
+            var semCourTeachers = new List<SemesterCourseTeacherVM>();
+            foreach (var x in depSemCourse.SemesterCourseTeachers)
+            {
+                semCourTeachers.Add(_mapper.Map<SemesterCourseTeacherVM>(x));
+            }
+
+            return Ok(semCourTeachers);
         }
 
         [HttpPost("AddCourseToTeacher")] // it works
@@ -76,7 +95,7 @@ namespace UniversitySystem.Controllers
 
             EditCourse.StartDate = semesterCourseTeacherVM.StartDate;
             EditCourse.EndDate = semesterCourseTeacherVM.EndDate;
-                        
+
             //_context.SemesterCourseTeachers.Update(EditCourse);
             await _context.SaveChangesAsync();
             return Ok(true);

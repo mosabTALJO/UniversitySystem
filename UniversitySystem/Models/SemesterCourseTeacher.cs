@@ -9,6 +9,7 @@
         public virtual Teacher Teacher { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public int MaxStudents { get; set; }
         //public virtual ICollection<TakenCourse> TakenCourses { get; set; }
     }
 }

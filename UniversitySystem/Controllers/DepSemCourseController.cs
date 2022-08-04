@@ -49,12 +49,13 @@ namespace UniversitySystem.Controllers
             return Ok(_context.DepartmentSemesterCourses.Where(c => c.CourseId == Id).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider));
         }
 
-        [HttpPost("NewDepartmentSemesterCourse")] // not adding max student amount
+        [HttpPost("NewDepartmentSemesterCourse")]  
         public async Task<ActionResult<int>> Post([FromBody] DepartmentSemesterCoursePostVM DepSemCourseVM)
         {
+            DepSemCourseVM.NumberOfStudents = 0;
             var DepSemCourse = _mapper.Map<DepartmentSemesterCourse>(DepSemCourseVM);
 
-            if(_context.DepartmentSemesterCourses.Any(x => x.CourseId == DepSemCourse.CourseId && x.EndDate != null))
+            if(_context.DepartmentSemesterCourses.Any(x => x.CourseId == DepSemCourse.CourseId && x.DepartmentId == DepSemCourse.DepartmentId && x.EndDate != null))
                 return BadRequest("this course is already open");
 
             await _context.DepartmentSemesterCourses.AddAsync(DepSemCourse);
@@ -70,7 +71,7 @@ namespace UniversitySystem.Controllers
                 return NotFound("Id not found");
 
             depSemCourse.Credit = DepSemCourseVM.Credit;
-            depSemCourse.MaxStudents = DepSemCourseVM.StudentsAmount;
+            depSemCourse.MaxStudents = DepSemCourseVM.MaxStudents;
             depSemCourse.EndDate = DepSemCourseVM.EndDate;
 
             await _context.SaveChangesAsync();
