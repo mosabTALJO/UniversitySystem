@@ -30,6 +30,9 @@ namespace UniversitySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("AddedByEmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("Date")
                         .HasColumnType("datetime2");
 
@@ -51,6 +54,9 @@ namespace UniversitySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("AddedByEmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -68,6 +74,9 @@ namespace UniversitySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("AddedByEmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -84,6 +93,9 @@ namespace UniversitySystem.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AddedByEmployeeId")
+                        .HasColumnType("int");
 
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
@@ -128,6 +140,9 @@ namespace UniversitySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("AddedByEmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<double>("Balance")
                         .HasColumnType("float");
 
@@ -171,6 +186,9 @@ namespace UniversitySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("AddedByEmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<int>("DepStuId")
                         .HasColumnType("int");
 
@@ -198,11 +216,10 @@ namespace UniversitySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("AddedByEmployeeId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -248,6 +265,9 @@ namespace UniversitySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("AddedByEmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
@@ -279,6 +299,9 @@ namespace UniversitySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("AddedByEmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CourseTakingEndDate")
                         .HasColumnType("datetime2");
 
@@ -305,6 +328,9 @@ namespace UniversitySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("AddedByEmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<int>("DepId")
                         .HasColumnType("int");
 
@@ -330,6 +356,9 @@ namespace UniversitySystem.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AddedByEmployeeId")
+                        .HasColumnType("int");
 
                     b.Property<int>("DepSemCourseId")
                         .HasColumnType("int");
@@ -367,10 +396,6 @@ namespace UniversitySystem.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -445,6 +470,34 @@ namespace UniversitySystem.Migrations
                     b.ToTable("Teachers");
                 });
 
+            modelBuilder.Entity("UniversitySystem.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("UniversitySystem.Models.WeekProgram", b =>
                 {
                     b.Property<int>("Id")
@@ -452,6 +505,9 @@ namespace UniversitySystem.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AddedByEmployeeId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Day")
                         .IsRequired()

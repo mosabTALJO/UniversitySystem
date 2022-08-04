@@ -7,5 +7,6 @@
         public int SemAmntID { get; set; }
         public double total { get; set; }
         public bool IsPayed { get; set; }
+        public int AddedByEmployeeId { get; set; }
     }
 }

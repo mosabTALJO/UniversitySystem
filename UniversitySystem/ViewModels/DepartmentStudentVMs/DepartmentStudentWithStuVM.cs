@@ -11,5 +11,6 @@
         public bool IsActive { get; set; }
         public int Year { get; set; }
         public double Balance { get; set; }
+        public int AddedByEmployeeId { get; set; }
     }
 }

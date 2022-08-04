@@ -12,5 +12,7 @@ namespace UniversitySystem.Models
         //public virtual DepartmentSemesterCourse DepSemCourse { get; set; }
         //public virtual Student Student { get; set; }
         public DateTime? Date { get; set; }
+        public int AddedByEmployeeId { get; set; }
+        //public virtual Employee AddedByEmployee { get; set; }
     }
 }

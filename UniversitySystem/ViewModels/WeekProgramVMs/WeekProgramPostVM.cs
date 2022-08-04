@@ -7,5 +7,6 @@
         public string Day { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
+        public int AddedByEmployeeId { get; set; }
     }
 }

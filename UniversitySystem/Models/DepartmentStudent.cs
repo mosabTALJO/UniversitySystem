@@ -16,6 +16,10 @@
         public double Balance { get; set; }
         public virtual ICollection<TakenCourse> TakenCourses { get; set; }
         public virtual ICollection<DepStuPayment> DepStuPayments { get; set; }
+        public int AddedByEmployeeId { get; set; }
+        public int UserId { get; set; }
+        public virtual User? User { get; set; }
+        //public virtual Employee AddedByEmployee { get; set; }
         //public virtual ICollection<Attendance> Attendances { get; set; }
     }
 }

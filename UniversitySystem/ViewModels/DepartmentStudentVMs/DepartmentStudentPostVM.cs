@@ -9,5 +9,6 @@
         public DateTime? GraduationDate { get; set; }
         public bool IsActive { get; set; }
         public int Year { get; set; }
+        public int AddedByEmployeeId { get; set; }
     }
 }

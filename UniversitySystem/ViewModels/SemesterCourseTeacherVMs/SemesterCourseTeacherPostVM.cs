@@ -7,5 +7,6 @@
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int MaxStudents { get; set; }
+        public int AddedByEmployeeId { get; set; }
     }
 }

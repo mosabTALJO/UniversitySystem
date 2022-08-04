@@ -12,5 +12,7 @@
         public int NumberOfStudents { get; set; }
         public int MaxStudents { get; set; }
         //public virtual ICollection<TakenCourse> TakenCourses { get; set; }
+        public int AddedByEmployeeId { get; set; }
+       // public virtual Employee AddedByEmployee { get; set; }
     }
 }

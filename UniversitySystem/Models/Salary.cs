@@ -9,5 +9,7 @@
         public DateTime? EndDate { get; set; }
         public int EmployeeId { get; set; }
         public virtual Employee Employee { get; set; }
+        public int AddedByEmployeeId { get; set; }
+        //public virtual Employee AddedByEmployee { get; set; }
     }
 }

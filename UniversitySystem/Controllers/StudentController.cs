@@ -95,7 +95,7 @@ namespace UniversitySystem.Controllers
             student.LastName = studentVM.LastName;
             student.PhoneNumber = studentVM.PhoneNumber;
             student.Address = studentVM.Address;
-            student.Email = studentVM.Email;
+            //student.Email = studentVM.Email;
             DepStu.DepartmentId = depId;
             DepStu.Year = year;
             DepStu.SupervisorId = supervisorId;

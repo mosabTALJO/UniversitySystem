@@ -9,5 +9,6 @@ namespace UniversitySystem.ViewModels.SalaryVMs
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public int EmployeeId { get; set; }
+        public int AddedByEmployeeId { get; set; }
     }
 }

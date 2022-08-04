@@ -68,7 +68,7 @@ namespace UniversitySystem.Controllers
             c.LastName = EmployeeVM.LastName;
             c.PhoneNumber = EmployeeVM.PhoneNumber;
             c.Address = EmployeeVM.Address;
-            c.Email = EmployeeVM.Email;
+            //c.Email = EmployeeVM.Email;
             await _context.SaveChangesAsync();
             return Ok(true);
         }

@@ -11,5 +11,6 @@ namespace UniversitySystem.ViewModels.EmployeeVM
         public string Email { get; set; }
         public long PhoneNumber { get; set; }        
         public virtual ICollection<DepartmentStudentVM> DepartmentStudents { get; set; }
+        public int AddedByEmployeeId { get; set; }
     }
 }

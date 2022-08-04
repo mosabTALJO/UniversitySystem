@@ -17,6 +17,8 @@
         public virtual ICollection<TakenCourse>? TakenCourses { get; set; }
         public virtual ICollection<WeekProgram>? WeekPrograms { get; set; }
         public virtual ICollection<SemesterCourseTeacher>? SemesterCourseTeachers { get; set; }
+        public int AddedByEmployeeId { get; set; }
+        //public virtual Employee AddedByEmployee { get; set; }
         //public virtual ICollection<Attendance> Attendances { get; set; }
     }
 }

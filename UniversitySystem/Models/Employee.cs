@@ -8,7 +8,7 @@ namespace UniversitySystem.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Address { get; set; }
-        public string Email { get; set; }
+        //public string Email { get; set; }
         public long PhoneNumber { get; set; }
         //public int? CurrentSalaryId { get; set; }
         //[NotMapped]
@@ -17,5 +17,9 @@ namespace UniversitySystem.Models
         public virtual ICollection<ManagementStaff> ManagementStaffs { get; set; }
         public virtual ICollection<Teacher> Teachers { get; set; }
         public virtual ICollection<DepartmentStudent> DepartmentStudents { get; set; }
+        public int AddedByEmployeeId { get; set; }
+        public int UserId { get; set; }
+        public virtual User? User { get; set; }
+        //public virtual Employee AddedByEmployee { get; set; }
     }
 }
