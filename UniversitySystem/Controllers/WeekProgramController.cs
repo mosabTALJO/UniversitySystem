@@ -7,7 +7,7 @@ using UniversitySystem.Models;
 using UniversitySystem.ViewModels.WeekProgramVMs;
 
 namespace UniversitySystem.Controllers
-{
+{///////////////////////////////////////////////////////////// all works /////////////////////////////////////////////////////////////
     [Route("api/[controller]")]
     [ApiController]
     public class WeekProgramController : Controller
