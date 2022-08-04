@@ -7,7 +7,7 @@ using UniversitySystem.Models;
 using UniversitySystem.ViewModels;
 
 namespace UniversitySystem.Controllers
-{
+{///////////////////////////////////////////////////////////// all works /////////////////////////////////////////////////////////////
     [Route("api/[controller]")]
     [ApiController]
     public class CourseController : Controller

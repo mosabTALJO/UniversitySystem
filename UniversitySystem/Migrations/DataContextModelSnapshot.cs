@@ -128,9 +128,6 @@ namespace UniversitySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<double>("Balance")
-                        .HasColumnType("float");
-
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
@@ -173,9 +170,6 @@ namespace UniversitySystem.Migrations
 
                     b.Property<int>("DepStuId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsPayed")
-                        .HasColumnType("bit");
 
                     b.Property<int>("SemAmntID")
                         .HasColumnType("int");

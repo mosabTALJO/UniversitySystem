@@ -7,8 +7,8 @@ using UniversitySystem.Models;
 using UniversitySystem.ViewModels;
 
 namespace UniversitySystem.Controllers
-{
-        [Route("api/[controller]")]
+{///////////////////////////////////////////////////////////// all works /////////////////////////////////////////////////////////////
+    [Route("api/[controller]")]
         [ApiController]
     public class DepStuPaymentController : Controller
     {
@@ -79,18 +79,19 @@ namespace UniversitySystem.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<bool>> IsPiad(int studId, int semId )// add a discount => "u can add it as a double between 0 and 100 then divaid ie on 100" <==
+        public async Task<ActionResult<bool>> IsPiad(int DepstudId, int semId )// add a discount => "u can add it as a double between 0 and 100 then divaid ie on 100" <==
         {
-            var stu = await _context.DepStuPayments.FirstOrDefaultAsync(d => d.DepStuId == studId && d.SemAmntID == semId && d.IsPayed == false);
-            var depstu = await _context.DepartmentStudents.FirstOrDefaultAsync(ds => ds.Id == studId);
+            var stu = await _context.DepStuPayments.FirstOrDefaultAsync(d => d.DepStuId == DepstudId && d.SemAmntID == semId && d.IsPayed == false);
+            var depstu = await _context.DepartmentStudents.FirstOrDefaultAsync(ds => ds.Id == DepstudId);
             
             if (stu == null) return NotFound("no not paid bills for this student with this id");
 
-            if (stu.Total <= depstu.Balance) return BadRequest("the balance is not enough");
+            if (stu.Total > depstu.Balance) return BadRequest("the balance is not enough");
 
             depstu.Balance -= stu.Total;
             stu.IsPayed = true;
 
+            await _context.SaveChangesAsync();
             return Ok(stu.IsPayed);
         }
 
@@ -112,8 +113,7 @@ namespace UniversitySystem.Controllers
             {
                 return 0;
             }
-
-            //record.Total = amount.Price; //Object reference not set to an instance of an object.
+            
             if (amount.Sem.GuzBaharYaz.Contains("yaz"))
                 record.Total = Price * ttlcrdt;
 

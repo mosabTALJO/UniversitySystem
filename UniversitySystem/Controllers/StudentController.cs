@@ -8,7 +8,7 @@ using UniversitySystem.ViewModels.DepartmentStudentVMs;
 using UniversitySystem.ViewModels.StudentVMs;
 
 namespace UniversitySystem.Controllers
-{
+{///////////////////////////////////////////////////////////// all works /////////////////////////////////////////////////////////////
     [Route("api/[controller]")]
     [ApiController]
     public class StudentController : Controller
@@ -55,7 +55,7 @@ namespace UniversitySystem.Controllers
             var student = _mapper.Map<Student>(studentVM);
             _context.Students.Add(student);
             await _context.SaveChangesAsync();
-            if (year = true)
+            if (year == true)
                 strtyr = 1;
             else strtyr = 0;
             _context.DepartmentStudents.Add(
@@ -121,13 +121,15 @@ namespace UniversitySystem.Controllers
         [HttpPost("DoubleMajorStudent")] // this is not working  "the problem is he is seting the student adress null "
         public async Task<ActionResult<int>> AddSeconedMajorStudent(DepartmentStudentPostVM departmentStudentVM)
         {
-            var stu = await _context.Students.FirstOrDefaultAsync(x => x.Id == departmentStudentVM.StudentId);
+            var stu = await _context.Students.Include(dest => dest.DepartmentStudents).FirstOrDefaultAsync(x => x.Id == departmentStudentVM.StudentId);
             if (stu == null)
                 return NotFound("wrong id");
             if (stu.DepartmentStudents.Any(x => x.DepartmentId == departmentStudentVM.DepartmentId))
                 return BadRequest("this student is already enrolled in this department");
 
             var major = _mapper.Map<DepartmentStudent>(departmentStudentVM);
+            
+            major.GraduationDate = null;
             _context.DepartmentStudents.Add(major);
             await _context.SaveChangesAsync();
             return Ok(major.StudentId);

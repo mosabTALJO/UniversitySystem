@@ -8,7 +8,7 @@ using UniversitySystem.ViewModels;
 using static UniversitySystem.Controllers.DepStuPaymentController;
 
 namespace UniversitySystem.Controllers
-{
+{///////////////////////////////////////////////////////////// all works /////////////////////////////////////////////////////////////
     [Route("api/[controller]")]
     [ApiController]
     public class SemesterAmountController : Controller
@@ -21,7 +21,7 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost]  // when this get executed all studedents gets a new records  =====>>>>>>  "not done yet" <<<<========
+        [HttpPost]  // when this get executed all studedents gets a new records  
         public async Task<ActionResult<int>> AddSemAmnt(SemesterAmountVM semesterAmountVM , int SemId, int DepId)
         {
             var semamnt = _mapper.Map<SemesterAmount>(semesterAmountVM);
@@ -44,7 +44,7 @@ namespace UniversitySystem.Controllers
                     Total = semamnt.Price
                 };
                 await AutoAddStudentPayment(depStu.Id, SemId, DepId, semamnt.Price , _context, _mapper, depStuPayment);
-            } //Object reference not set to an instance of an object.
+            } 
             await _context.SaveChangesAsync();  
             return Ok(semamnt.Id);
         }

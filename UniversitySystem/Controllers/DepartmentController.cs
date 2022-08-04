@@ -7,7 +7,7 @@ using UniversitySystem.Models;
 using UniversitySystem.ViewModels;
 
 namespace UniversitySystem.Controllers
-{
+{ ///////////////////////////////////////////////////////////// all works /////////////////////////////////////////////////////////////
     [Route("api/[controller]")]
     [ApiController]
     public class DepartmentController : Controller
@@ -44,9 +44,9 @@ namespace UniversitySystem.Controllers
         [HttpPut] // works
         public async Task<ActionResult<string>> UpdateDep(            
             [FromBody] DepartmentVM departmentVM,
-            [FromQuery] string? search = null)
+            [FromQuery] string? DepName = null)
         {
-            var dep = await _context.Departments.FirstOrDefaultAsync(dp => dp.Name.Contains(search));
+            var dep = await _context.Departments.FirstOrDefaultAsync(dp => dp.Name.Contains(DepName));
             if (dep == null)
                 return BadRequest("no department with this name");
             
@@ -57,9 +57,9 @@ namespace UniversitySystem.Controllers
 
         [HttpDelete]  // works
         public async Task<ActionResult<bool>> DltDep(            
-            [FromQuery] string? search = null)
+            [FromQuery] string? DepName = null)
         {
-            var dep = await _context.Departments.FirstOrDefaultAsync(dp => dp.Name.Contains(search));
+            var dep = await _context.Departments.FirstOrDefaultAsync(dp => dp.Name.Contains(DepName));
             if (dep == null)
                 return BadRequest("no department with this name");
             _context.Departments.Remove(dep);

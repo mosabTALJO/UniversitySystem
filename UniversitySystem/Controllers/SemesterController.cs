@@ -10,6 +10,7 @@ namespace UniversitySystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    /////////////////////////////////////////////////////////////    all works        "but when cahge don't forget to edit" /////////////////////////////////////////////////////////////
     public class SemesterController : Controller
     {
         private readonly DataContext _context;
@@ -41,17 +42,16 @@ namespace UniversitySystem.Controllers
             return Ok(await _context.Semesters.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 
-        [HttpPut] 
+        [HttpPut] // when u add the course adding date change this
         public async Task<ActionResult<string>> UpdateSem(            
             [FromBody] SemesterVM semesterVM,
-            [FromQuery] int? year = null)
+            int SemesterId)
         {
-            var sem = await _context.Semesters.FirstOrDefaultAsync(dp => dp.Year == year);
+            var sem = await _context.Semesters.FirstOrDefaultAsync(dp => dp.Id == SemesterId);
             if (sem == null)
                 return BadRequest("no semester like this");
                         
-            sem.Year = semesterVM.Year;
-            sem.GuzBaharYaz = semesterVM.GuzBaharYaz;
+            
             await _context.SaveChangesAsync();
             return Ok(sem.GuzBaharYaz);
         }
