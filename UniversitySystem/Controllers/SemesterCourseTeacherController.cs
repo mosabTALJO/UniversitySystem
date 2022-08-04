@@ -75,13 +75,7 @@ namespace UniversitySystem.Controllers
             if (temp != null)
                 return BadRequest("this teacher already teaches this course");
 
-            var NewCourseTeacher = new SemesterCourseTeacher
-            {
-                DepSemCourseId = DepSemcourse.Id,
-                TeacherId = SemesterCourseTeacherVM.TeacherId,
-                StartDate = SemesterCourseTeacherVM.StartDate,
-                EndDate = SemesterCourseTeacherVM.EndDate
-            };
+            var NewCourseTeacher = _mapper.Map<SemesterCourseTeacher>(SemesterCourseTeacherVM);
             await _context.SemesterCourseTeachers.AddAsync(NewCourseTeacher);
             await _context.SaveChangesAsync();
             return Ok(NewCourseTeacher.Id);

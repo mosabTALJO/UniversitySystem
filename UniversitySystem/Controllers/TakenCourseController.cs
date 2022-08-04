@@ -73,18 +73,20 @@ namespace UniversitySystem.Controllers
             return Ok(result);
         }
 
-        [HttpPost("{DepStuId}/{DepSemCourseId}/{SemCourseTeacherId}")]
-        public async Task<ActionResult<int>> Post(int DepStuId, int DepSemCourseId, int SemCourseTeacherId)
+        [HttpPost("{DepStuId}/{SemCourseTeacherId}")]
+        public async Task<ActionResult<int>> Post(int DepStuId, int SemCourseTeacherId)
         {
             var depStu = await _context.DepartmentStudents.Include(ds => ds.TakenCourses).Include(ds => ds.Department).FirstOrDefaultAsync(s => s.Id == DepStuId);
             if (depStu == null)
                 return NotFound("student not found");
 
-            var stuTakenCourses = await _context.TakenCourses.FirstOrDefaultAsync(x => x.DepSemCourseId == DepSemCourseId && x.DepStudentId == DepStuId);
-            if (stuTakenCourses != null)
-                return BadRequest("you already have this course");
+            var SemCourTeacher = await _context.SemesterCourseTeachers.Include(x => x.DepSemCourse).FirstOrDefaultAsync(x => x.Id == SemCourseTeacherId);
+            if (SemCourTeacher == null)
+                return NotFound("this teacher doesn't teach this course");
+            if (SemCourTeacher.NumberOfStudents >= SemCourTeacher.MaxStudents)
+                return BadRequest("this teacher has reached their max student count");
 
-            var depSemCourse = await _context.DepartmentSemesterCourses.FirstOrDefaultAsync(dsc => dsc.Id == DepSemCourseId);
+            var depSemCourse = SemCourTeacher.DepSemCourse;
             if (depSemCourse == null)
                 return NotFound("the course you are looking for is not found");
             if (depSemCourse.EndDate < DateTime.Now)
@@ -94,22 +96,23 @@ namespace UniversitySystem.Controllers
             if (depSemCourse.DepartmentId != depStu.DepartmentId)
                 return BadRequest("you are not enrolled in this department");
 
-            var SemCourTeacher = await _context.SemesterCourseTeachers.FirstOrDefaultAsync(x => x.Id == SemCourseTeacherId);
-            if (SemCourTeacher == null)
-                return NotFound("this teacher doesn't teach this course");
-            if (SemCourTeacher.NumberOfStudents >= SemCourTeacher.MaxStudents)
-                return BadRequest("this teacher has reached their max student count");
+            var stuTakenCourses = await _context.TakenCourses.FirstOrDefaultAsync(x => x.DepSemCourseId == depSemCourse.Id && x.DepStudentId == DepStuId);
+            if (stuTakenCourses != null)
+                return BadRequest("you already have this course");
 
             var takenCourse = new TakenCourse
             {
                 DepStudentId = DepStuId,
-                DepSemCourseId = DepSemCourseId,
+                DepSemCourseId = depSemCourse.Id,
                 SemCourseTeacherId = SemCourseTeacherId
             };
             await _context.TakenCourses.AddAsync(takenCourse);
             await _context.SaveChangesAsync();
 
             depSemCourse.NumberOfStudents++;
+            await _context.SaveChangesAsync();
+
+            SemCourTeacher.NumberOfStudents++;
             await _context.SaveChangesAsync();
 
             return Ok(takenCourse.Id);
