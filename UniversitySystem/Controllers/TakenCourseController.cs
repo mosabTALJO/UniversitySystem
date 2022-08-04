@@ -58,18 +58,14 @@ namespace UniversitySystem.Controllers
             return Ok(await _context.TakenCourses.Where(x => x.DepSemCourseId == DepSemCourseId).ProjectTo<TakenCourseVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 
-        [HttpGet("teacher/{TeacherId}/{CourseId}")] //change the ids************** //teacher gets all students (taken courses) who took a course that he teaches
-        public async Task<ActionResult<List<TakenCourseVM>>> Get(int TeacherId, int CourseId)
+        [HttpGet("teacher/{SemCourTeacherId}")]  //teacher gets all students (taken courses) who took a course that he teaches
+        public async Task<ActionResult<List<TakenCourseVM>>> Get(int SemCourTeacherId)
         {
-            var depSemCourse = await _context.DepartmentSemesterCourses.FirstOrDefaultAsync(x => x.CourseId == CourseId && x.EndDate == null);
-            if (depSemCourse == null)
-                return NotFound("this course is not open this semester");
-
-            var semCourTeacher = await _context.SemesterCourseTeachers.FirstOrDefaultAsync(x => x.TeacherId == TeacherId && x.DepSemCourseId == depSemCourse.Id);
+            var semCourTeacher = await _context.SemesterCourseTeachers.FirstOrDefaultAsync(x => x.Id == SemCourTeacherId);
             if (semCourTeacher == null)
                 return BadRequest("you don't teach this course");
 
-            var result = await _context.TakenCourses.Where(x => x.SemCourseTeacherId == semCourTeacher.Id && x.DepSemCourseId == depSemCourse.Id).ToListAsync();
+            var result = await _context.TakenCourses.Where(x => x.SemCourseTeacherId == semCourTeacher.Id).ToListAsync();
             return Ok(result);
         }
 

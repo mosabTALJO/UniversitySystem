@@ -3,8 +3,7 @@
     public class AttendanceVM
     {
         public int Id { get; set; }
-        public int DepSemCourseId { get; set; }
-        public int StudentId { get; set; }
+        public int TakenCourseId { get; set; }
         public DateTime? Date { get; set; }
     }
 }
