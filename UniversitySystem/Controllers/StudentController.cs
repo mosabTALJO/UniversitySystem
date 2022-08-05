@@ -25,8 +25,8 @@ namespace UniversitySystem.Controllers
             _userManager = userManager;
         }
 
-        [Authorize(Roles = "Manager,Teacher")]
         [HttpGet("List/{DepId}")] //works // Search for students by department id and year 
+        [Authorize(Roles = "Manager,Teacher")]
         public async Task<ActionResult<List<DepartmentStudentVM>>> Get(int DepId, int? year = null)
         {
             if (year != null)
@@ -34,27 +34,38 @@ namespace UniversitySystem.Controllers
             return await _context.DepartmentStudents.ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).ToListAsync();
         }
 
+        [HttpGet("byId")]  //works // change to DepStu
         [Authorize]
-        [HttpGet("byId/{DepStuId}")]  //works // change to DepStu
-        public async Task<ActionResult<DepartmentStudentVM>> GetStudnt(int DepStuId)
+        public async Task<ActionResult<DepartmentStudentAllInfoVM>> GetStudnt()
         {
-            var stu = await _context.DepartmentStudents.ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == DepStuId);
-            if (stu == null)
+            var depStu = await _context.DepartmentStudents.Include(x => x.Student).FirstOrDefaultAsync(x => x.Student.UserId == User.Identity.Name);
+            if (depStu == null)
                 return NotFound("No student with this id");
-            return Ok(stu);
+            return Ok(_mapper.Map<DepartmentStudentAllInfoVM>(depStu));
         }
 
-        [Authorize(Roles = "Manager,Teacher")]
         [HttpGet("byName/{StdnNm}")] //works
-        public async Task<ActionResult<List<StudentVM>>> GetStudnt(string StdnNm)
+        [Authorize(Roles = "Manager,Teacher")]
+        public async Task<ActionResult<List<StudentVM>>> GetStudntByName(string StdnNm)
         {
-            var stu = await _context.Students.ProjectTo<StudentVM>(_mapper.ConfigurationProvider).Where(x => x.FirstName.Contains(StdnNm)).ToListAsync();
+            var stu = await _context.DepartmentStudents.ProjectTo<DepartmentStudentAllInfoVM>(_mapper.ConfigurationProvider).Where(x => x.FirstName.Contains(StdnNm)).ToListAsync();
+            if (stu == null)
+                return NotFound("No student with this name");
+            return Ok(stu);
+        }
+        
+        [HttpGet("byId/{DepStuId}")] //works
+        [Authorize(Roles = "Manager,Teacher")]
+        public async Task<ActionResult<List<StudentVM>>> GetStudntById(int DepStuId)
+        {
+            var stu = await _context.DepartmentStudents.ProjectTo<DepartmentStudentAllInfoVM>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == DepStuId);
             if (stu == null)
                 return NotFound("No student with this name");
             return Ok(stu);
         }
 
         [HttpPost ("NewStudent")] //works // authentaction required      //add new student
+        [Authorize(Roles = "Manager")]
         public async Task<ActionResult<int>> Post(StudentPostVM studentVM, int DepId, bool year, int supervisorId, string email, string password)
         {
             studentVM.Id = 0;
@@ -94,12 +105,14 @@ namespace UniversitySystem.Controllers
             {
                 await _userManager.AddToRoleAsync(newUser, newUser.UserType.ToString());
             }
+            student.UserId = newUser.Id;
             await _context.SaveChangesAsync();
 
-            return Ok(student.Id);
+            return Ok(depStu.Id);
         }
 
         [HttpPut("{StudentId}")]  //works // authentaction required   //Edit student info by id
+        [Authorize(Roles = "Manager")]
         public async Task<ActionResult<bool>> Put(int StudentId, [FromBody] StudentPostVM studentVM, 
                                                                  int depId,
                                                                  DateTime graduationDate,
@@ -133,7 +146,7 @@ namespace UniversitySystem.Controllers
         }
 
         [HttpDelete("{StudentId}")] // authentaction required //delete a student by id
-
+        [Authorize(Roles = "Manager")]
         public async Task<ActionResult<bool>> Delete(int StudentId)
         {
             var c = await _context.Students.FirstOrDefaultAsync(c => c.Id == StudentId);
@@ -145,6 +158,7 @@ namespace UniversitySystem.Controllers
         }
 
         [HttpPost("DoubleMajorStudent")] // this is not working  "the problem is he is seting the student adress null "
+        [Authorize(Roles = "Manager")]
         public async Task<ActionResult<int>> AddSeconedMajorStudent(DepartmentStudentPostVM departmentStudentVM)
         {
             var stu = await _context.Students.Include(dest => dest.DepartmentStudents).FirstOrDefaultAsync(x => x.Id == departmentStudentVM.StudentId);
@@ -163,6 +177,7 @@ namespace UniversitySystem.Controllers
         }
 
         [HttpPut("AddBalance")] 
+        [Authorize(Roles = "Student")]
         public async Task<ActionResult<bool>> PutBalance(int DepStudentId, 
                                                         double Amount)
         {

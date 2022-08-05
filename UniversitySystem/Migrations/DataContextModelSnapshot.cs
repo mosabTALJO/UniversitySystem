@@ -294,7 +294,7 @@ namespace UniversitySystem.Migrations
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SupervisorId")
+                    b.Property<int?>("SupervisorId")
                         .HasColumnType("int");
 
                     b.Property<int>("Year")
@@ -367,7 +367,12 @@ namespace UniversitySystem.Migrations
                     b.Property<long>("PhoneNumber")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Employees");
                 });
@@ -543,7 +548,12 @@ namespace UniversitySystem.Migrations
                     b.Property<long>("PhoneNumber")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Students");
                 });
@@ -811,9 +821,7 @@ namespace UniversitySystem.Migrations
 
                     b.HasOne("UniversitySystem.Models.Employee", "Supervisor")
                         .WithMany("DepartmentStudents")
-                        .HasForeignKey("SupervisorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SupervisorId");
 
                     b.Navigation("Department");
 
@@ -831,6 +839,15 @@ namespace UniversitySystem.Migrations
                         .IsRequired();
 
                     b.Navigation("DepStu");
+                });
+
+            modelBuilder.Entity("UniversitySystem.Models.Employee", b =>
+                {
+                    b.HasOne("UniversitySystem.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.ManagementStaff", b =>
@@ -891,6 +908,15 @@ namespace UniversitySystem.Migrations
                     b.Navigation("DepSemCourse");
 
                     b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("UniversitySystem.Models.Student", b =>
+                {
+                    b.HasOne("UniversitySystem.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("UniversitySystem.Models.TakenCourse", b =>

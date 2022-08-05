@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversitySystem.Data;
@@ -12,14 +14,17 @@ namespace UniversitySystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize(Roles = "Manager")]
     public class EmployeeController : Controller
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
-        public EmployeeController(DataContext context, IMapper mapper)
+        private readonly UserManager<User> _userManager;
+        public EmployeeController(DataContext context, IMapper mapper, UserManager<User> userManager)
         {
             _context = context;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         [HttpGet("{EmployeeId}")]//works
@@ -33,27 +38,71 @@ namespace UniversitySystem.Controllers
         }
 
         [HttpPost("teacher")]  // authentaction required   //add new teacher and employee //this works
-        public async Task<ActionResult<int>> AddTeacher(EmployeeInfoVM EmployeeVM , int amount, string rank)
+        public async Task<ActionResult<int>> AddTeacher(EmployeeInfoVM EmployeeVM , int amount, string rank, string email, string password)
         {
             EmployeeVM.Id = 0;            
             var employee = _mapper.Map<Employee>(EmployeeVM);            
             _context.Employees.Add(employee);            
             await _context.SaveChangesAsync();
+
             _context.Salaries.Add(new Salary { StartDate = DateTime.Now, EndDate = null, EmployeeId = employee.Id, Amount = amount, Rank = rank });
             _context.Teachers.Add(new Teacher { EmployeeId = employee.Id });
             await _context.SaveChangesAsync();
+
+            var newUser = new User
+            {
+                Email = email,
+                PasswordHash = password,
+                UserName = employee.Id.ToString(),
+                PhoneNumber = employee.PhoneNumber.ToString(),
+                DisplayName = employee.FirstName + " " + employee.LastName,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserType = UserTypes.Teacher
+            };
+
+            var result = await _userManager.CreateAsync(newUser, password);
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(newUser, newUser.UserType.ToString());
+            }
+            await _context.SaveChangesAsync();
+            employee.UserId = newUser.Id;
+            await _context.SaveChangesAsync();
+
             return Ok(employee.Id);
         }
-
+        [Authorize]
         [HttpPost("manager")]  // authentaction required   //add new manager and employee
-        public async Task<ActionResult<int>> AddManager(EmployeeInfoVM EmployeeVM, int amount, string rank)
+        public async Task<ActionResult<int>> AddManager(EmployeeInfoVM EmployeeVM, int amount, string rank, string email, string password)
         {
             var employee = _mapper.Map<Employee>(EmployeeVM);
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
+            var temp = User.Claims;
             _context.Salaries.Add(new Salary { StartDate = DateTime.Now, EndDate = null, EmployeeId = employee.Id, Amount = amount, Rank = rank });
             _context.ManagementStaffs.Add(new ManagementStaff { EmployeeId = employee.Id });
             await _context.SaveChangesAsync();
+
+            var newUser = new User
+            {
+                Email = email,
+                PasswordHash = password,
+                UserName = employee.Id.ToString(),
+                PhoneNumber = employee.PhoneNumber.ToString(),
+                DisplayName = employee.FirstName + " " + employee.LastName,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserType = UserTypes.Manager
+            };
+
+            var result = await _userManager.CreateAsync(newUser, password);
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(newUser, newUser.UserType.ToString());
+            }
+            await _context.SaveChangesAsync();
+            employee.UserId = newUser.Id;
+            await _context.SaveChangesAsync();
+
             return Ok(employee.Id);
         }
 

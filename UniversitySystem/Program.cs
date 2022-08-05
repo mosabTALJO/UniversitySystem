@@ -34,17 +34,6 @@ builder.Services.AddSwaggerGen(options =>
 
 //builder.Services.AddMediatR(typeof(Program));
 builder.Services.AddAutoMapper(typeof(Program));
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
-                        ValidateIssuer = false,
-                        ValidateAudience = false
-                    };
-                });
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
@@ -54,10 +43,45 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequireNonAlphanumeric = false;
 })
+.AddEntityFrameworkStores<DataContext>()
+.AddDefaultTokenProviders();
 
-               .AddEntityFrameworkStores<DataContext>()
-               .AddDefaultTokenProviders();
-
+builder.Services.AddAuthentication(option =>
+{
+    option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    option.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidAudience = builder.Configuration.GetSection("Jwt:Site").Value,
+        ValidIssuer = builder.Configuration.GetSection("Jwt:Site").Value,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:Token").Value)),
+        //ValidateIssuerSigningKey = true,
+        //ValidateIssuer = builder.Configuration.GetSection("AppSettings:Site").Value,
+        //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value))
+    };
+});
+//builder.Services.AddAuthentication(option =>
+//{
+//    option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//    option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//    option.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+//})
+//            .AddJwtBearer(options =>
+//            {
+//                options.SaveToken = true;
+//                options.RequireHttpsMetadata = false;
+//                options.TokenValidationParameters = tokenValidationParameters;
+//            });
 
 var app = builder.Build();
 

@@ -10,6 +10,7 @@ namespace UniversitySystem.ViewModels.StudentVMs
         public string Address { get; set; }
         public string Email { get; set; }
         public long PhoneNumber { get; set; }
+        public string? UserId { get; set; }
         public List<DepartmentStudentWithStuVM> DepStus { get; set; }
 
     }

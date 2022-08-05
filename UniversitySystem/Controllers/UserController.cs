@@ -49,12 +49,12 @@ namespace UniversitySystem.Controllers
         public async Task<IActionResult> Login(string username, string password)
         {
             //var user = await _context.Users.FirstOrDefaultAsync(u => u.DisplayName == username && u.PasswordHash == password);
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username && u.PasswordHash == password);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username);
             if (user is null)
                 return BadRequest("Username or password is incorrect");
 
-            //if (!await _userManager.CheckPasswordAsync(user, password))
-            //    return BadRequest("Password is incorrect");
+            if (!await _userManager.CheckPasswordAsync(user, password))
+                return BadRequest("Password is incorrect");
 
             var token = GenerateToken(user);
             return Ok(token);
@@ -64,15 +64,17 @@ namespace UniversitySystem.Controllers
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.DisplayName),
-                //new Claim(ClaimTypes.Role, user.)
+                new Claim(ClaimTypes.Name, user.Id),
+                new Claim(ClaimTypes.Role, user.UserType.ToString())
             };
 
-            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_config.GetSection("Jwt:Token").Value));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var token = new JwtSecurityToken(
+                issuer: _config.GetSection("Jwt:Site").Value,
+                audience: _config.GetSection("Jwt:Site").Value,
                 claims: claims,
                 expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds);
