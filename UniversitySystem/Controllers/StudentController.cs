@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversitySystem.Data;
@@ -21,7 +22,8 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{DepId}")] //works // Search for students by department id and year 
+        [Authorize(Roles = "Manager")]
+        [HttpGet("List/{DepId}")] //works // Search for students by department id and year 
         public async Task<ActionResult<List<DepartmentStudentVM>>> Get(int DepId, int? year = null)
         {
             if (year != null)
@@ -29,7 +31,7 @@ namespace UniversitySystem.Controllers
             return await _context.DepartmentStudents.ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).ToListAsync();
         }
 
-        [HttpGet("byId/{StuId}")]  //works
+        [HttpGet("byId/{StuId}")]  //works // change to DepStu
         public async Task<ActionResult<StudentVM>> GetStudnt(int StuId)
         {
             var stu = await _context.Students.ProjectTo<StudentVM>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == StuId);
