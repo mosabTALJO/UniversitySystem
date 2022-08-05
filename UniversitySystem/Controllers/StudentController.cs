@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversitySystem.Data;
@@ -16,10 +17,12 @@ namespace UniversitySystem.Controllers
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
-        public StudentController(DataContext context, IMapper mapper)
+        private readonly UserManager<User> _userManager;
+        public StudentController(DataContext context, IMapper mapper, UserManager<User> userManager)
         {
             _context = context;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         [Authorize(Roles = "Manager,Teacher")]
@@ -52,7 +55,7 @@ namespace UniversitySystem.Controllers
         }
 
         [HttpPost ("NewStudent")] //works // authentaction required      //add new student
-        public async Task<ActionResult<int>> Post(StudentPostVM studentVM, int DepId, bool year, int supervisorId)
+        public async Task<ActionResult<int>> Post(StudentPostVM studentVM, int DepId, bool year, int supervisorId, string email, string password)
         {
             studentVM.Id = 0;
             int strtyr;
@@ -62,19 +65,36 @@ namespace UniversitySystem.Controllers
             if (year == true)
                 strtyr = 1;
             else strtyr = 0;
-            _context.DepartmentStudents.Add(
-                new DepartmentStudent
-                {
-                    StudentId = student.Id,
-                    DepartmentId = DepId,
-                    Year = strtyr,
-                    SupervisorId = supervisorId,
-                    EnrollmentDate = DateTime.Today,
-                    IsActive = true,
-                    Balance = 0
-                });
+            var depStu = new DepartmentStudent
+            {
+                StudentId = student.Id,
+                DepartmentId = DepId,
+                Year = strtyr,
+                SupervisorId = supervisorId,
+                EnrollmentDate = DateTime.Today,
+                IsActive = true,
+                Balance = 0
+            };
+            _context.DepartmentStudents.Add(depStu);
             await _context.SaveChangesAsync();
 
+            var newUser = new User
+            {
+                Email = email,
+                PasswordHash = password,
+                UserName = depStu.Id.ToString(),
+                PhoneNumber = student.PhoneNumber.ToString(),
+                DisplayName = student.FirstName + " " + student.LastName,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserType = UserTypes.Student
+            };
+
+            var result = await _userManager.CreateAsync(newUser, password);
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(newUser, newUser.UserType.ToString());
+            }
+            await _context.SaveChangesAsync();
 
             return Ok(student.Id);
         }

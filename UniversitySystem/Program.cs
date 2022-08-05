@@ -46,17 +46,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     };
                 });
 
-//builder.Services.AddIdentity<User, IdentityRole>(options =>
-//{
-//    options.Password.RequiredLength = 6;
-//    options.Password.RequireDigit = false;
-//    options.Password.RequireLowercase = false;
-//    options.Password.RequireUppercase = false;
-//    options.Password.RequireNonAlphanumeric = false;
-//})
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+{
+    options.Password.RequiredLength = 6;
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+})
 
-//               .AddEntityFrameworkStores<DataContext>()
-//               .AddDefaultTokenProviders();
+               .AddEntityFrameworkStores<DataContext>()
+               .AddDefaultTokenProviders();
 
 
 var app = builder.Build();
