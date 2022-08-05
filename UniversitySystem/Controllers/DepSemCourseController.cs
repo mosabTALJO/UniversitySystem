@@ -78,6 +78,8 @@ namespace UniversitySystem.Controllers
             return Ok(true);
         }
 
+
+
         [HttpDelete("{DepSemCourseId}")]
         public async Task<ActionResult<bool>> Delete(int DepSemCourseId)
         {

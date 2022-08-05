@@ -27,23 +27,7 @@ namespace UniversitySystem.Controllers
             _config = config;
             _userManager = userManager;
         }
-
-        [Authorize(Roles = "Manager")]
-        [HttpPost("SignUp")]
-        public async Task<ActionResult<bool>> SignUp(UserVM userVM)
-        {
-            //userVM.Id = string.Empty;
-            //var newUser = new User
-            //{
-            //    Email = userVM.Email,
-            //    PasswordHash = userVM.Password,
-            //    UserName = userVM.UserName,
-            //};
-
-            //await _context.Users.AddAsync(newUser);
-            //await _context.SaveChangesAsync();
-            return Ok(true);
-        }
+       
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(string username, string password)
