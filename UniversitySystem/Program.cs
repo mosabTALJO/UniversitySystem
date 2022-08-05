@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 using UniversitySystem.Data;
+using UniversitySystem.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +45,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                         ValidateAudience = false
                     };
                 });
+
+//builder.Services.AddIdentity<User, IdentityRole>(options =>
+//{
+//    options.Password.RequiredLength = 6;
+//    options.Password.RequireDigit = false;
+//    options.Password.RequireLowercase = false;
+//    options.Password.RequireUppercase = false;
+//    options.Password.RequireNonAlphanumeric = false;
+//})
+
+//               .AddEntityFrameworkStores<DataContext>()
+//               .AddDefaultTokenProviders();
+
 
 var app = builder.Build();
 

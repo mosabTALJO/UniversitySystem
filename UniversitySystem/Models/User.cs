@@ -1,12 +1,12 @@
-﻿namespace UniversitySystem.Models
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace UniversitySystem.Models
 {
-    public class User
+    public class User : IdentityUser
     {
-        public int Id { get; set; }
-        public string Username { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public UserTypes UserType { get; set; }
+        public string DisplayName { get; set; }
+        public string Address { get; set; }
+        //public UserTypes UserType { get; set; }
         //public virtual DepartmentStudent? DepartmentStudent { get; set; }
         //public virtual Employee? Employee { get; set; }
     }

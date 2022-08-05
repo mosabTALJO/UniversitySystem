@@ -18,8 +18,8 @@ namespace UniversitySystem.Models
         public virtual ICollection<Teacher> Teachers { get; set; }
         public virtual ICollection<DepartmentStudent> DepartmentStudents { get; set; }
         public int AddedByEmployeeId { get; set; }
-        public int UserId { get; set; }
-        public virtual User? User { get; set; }
+        //public int UserId { get; set; }
+        //public virtual User? User { get; set; }
         //public virtual Employee AddedByEmployee { get; set; }
     }
 }

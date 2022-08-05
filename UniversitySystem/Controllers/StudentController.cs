@@ -22,7 +22,7 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpGet("List/{DepId}")] //works // Search for students by department id and year 
         public async Task<ActionResult<List<DepartmentStudentVM>>> Get(int DepId, int? year = null)
         {
@@ -31,15 +31,17 @@ namespace UniversitySystem.Controllers
             return await _context.DepartmentStudents.ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).ToListAsync();
         }
 
-        [HttpGet("byId/{StuId}")]  //works // change to DepStu
-        public async Task<ActionResult<StudentVM>> GetStudnt(int StuId)
+        [Authorize]
+        [HttpGet("byId/{DepStuId}")]  //works // change to DepStu
+        public async Task<ActionResult<DepartmentStudentVM>> GetStudnt(int DepStuId)
         {
-            var stu = await _context.Students.ProjectTo<StudentVM>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == StuId);
+            var stu = await _context.DepartmentStudents.ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == DepStuId);
             if (stu == null)
                 return NotFound("No student with this id");
             return Ok(stu);
         }
 
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpGet("byName/{StdnNm}")] //works
         public async Task<ActionResult<List<StudentVM>>> GetStudnt(string StdnNm)
         {
@@ -72,6 +74,8 @@ namespace UniversitySystem.Controllers
                     Balance = 0
                 });
             await _context.SaveChangesAsync();
+
+
             return Ok(student.Id);
         }
 

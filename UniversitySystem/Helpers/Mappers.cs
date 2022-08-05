@@ -30,6 +30,12 @@ namespace UniversitySystem.Helpers
                                                                .ForMember(dest => dest.StudentFirstName , opt => opt.MapFrom(src => src.Student.FirstName)).ReverseMap();
             CreateMap<DepartmentStudent, DepartmentStudentPostVM>().ReverseMap();
             CreateMap<DepartmentStudent, DepartmentStudentWithStuVM>().ForMember(dest => dest.SupervisorName, opt => opt.MapFrom(src => src.Supervisor.FirstName + " " + src.Supervisor.LastName));
+            CreateMap<DepartmentStudent, DepartmentStudentAllInfoVM>().ForMember(dest => dest.SupervisorName, opt => opt.MapFrom(src => src.Supervisor.FirstName + " " + src.Supervisor.LastName))
+                                                                      .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Student.FirstName))
+                                                                      .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Student.LastName))
+                                                                      //.ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Student.Email))
+                                                                      .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Student.Address))
+                                                                      .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.Student.PhoneNumber));
 
             CreateMap<Course, CourseVM>().ReverseMap();
 

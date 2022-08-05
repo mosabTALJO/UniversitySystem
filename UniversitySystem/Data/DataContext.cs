@@ -28,6 +28,6 @@ namespace UniversitySystem.Data
         public DbSet<Semester> Semesters { get; set; }
         public DbSet<DepStuPayment> DepStuPayments { get; set; }
         public DbSet<SemesterAmount> SemesterAmounts { get; set; }
-        public DbSet<User> Users { get; set; }
+        //public DbSet<User> Users { get; set; }
     }
 }
