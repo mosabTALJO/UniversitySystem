@@ -27,16 +27,27 @@ namespace UniversitySystem.Controllers
             _userManager = userManager;
         }
 
+        [Authorize(Roles = "Manager,Teacher")]
+        [HttpGet("EmployeeSignIn")]//works
+        public async Task<ActionResult<List<EmployeeInfoVM>>> EmployeeSignIn()
+        {
+            var c = await _context.Employees.FirstOrDefaultAsync(c => c.UserId == User.Identity.Name);
+            if (c == null)
+                return NotFound("There is no empolyee with this ID");
+            return Ok(c);
+        }
+
+        [Authorize(Roles = "Manager")]
         [HttpGet("{EmployeeId}")]//works
         public async Task<ActionResult<List<EmployeeInfoVM>>> Get(int EmployeeId)
         {
             var c = await _context.Employees.FirstOrDefaultAsync(c => c.Id == EmployeeId);
             if (c == null)
                 return NotFound("There is no empolyee with this ID");
-            var m = await _context.Employees.ProjectTo<EmployeeInfoVM>(_mapper.ConfigurationProvider).Where(x => x.Id == EmployeeId).ToListAsync();
-            return Ok(m);
+            return Ok(c);
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpPost("teacher")]  // authentaction required   //add new teacher and employee //this works
         public async Task<ActionResult<int>> AddTeacher(EmployeeInfoVM EmployeeVM , int amount, string rank, string email, string password)
         {
@@ -71,7 +82,8 @@ namespace UniversitySystem.Controllers
 
             return Ok(employee.Id);
         }
-        [Authorize]
+
+        [Authorize(Roles = "Manager")]
         [HttpPost("manager")]  // authentaction required   //add new manager and employee
         public async Task<ActionResult<int>> AddManager(EmployeeInfoVM EmployeeVM, int amount, string rank, string email, string password)
         {
@@ -106,6 +118,7 @@ namespace UniversitySystem.Controllers
             return Ok(employee.Id);
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpPut("{EmployeeId}")] // works
         public async Task<ActionResult<bool>> Put(int EmployeeId, [FromBody] EmployeeInfoVM EmployeeVM)
         {
@@ -122,6 +135,7 @@ namespace UniversitySystem.Controllers
             return Ok(true);
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpDelete("{EmployeeId}")]
         public async Task<ActionResult<bool>> Delete(int EmployeeId)
         {

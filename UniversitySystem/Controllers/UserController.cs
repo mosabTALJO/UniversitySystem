@@ -27,7 +27,6 @@ namespace UniversitySystem.Controllers
             _config = config;
             _userManager = userManager;
         }
-       
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(string username, string password)
