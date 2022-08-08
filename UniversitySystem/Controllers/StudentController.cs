@@ -30,15 +30,15 @@ namespace UniversitySystem.Controllers
         public async Task<ActionResult<List<DepartmentStudentVM>>> Get(int DepId, int? year = null)
         {
             if (year != null)
-                return await _context.DepartmentStudents.ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId && x.Year == year).ToListAsync();
-            return await _context.DepartmentStudents.ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).ToListAsync();
+                return await _context.DepartmentStudents.Where(x => !x.DeletedAt.HasValue).ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId && x.Year == year).ToListAsync();
+            return await _context.DepartmentStudents.Where(x => !x.DeletedAt.HasValue).ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).ToListAsync();
         }
 
         [HttpGet("StudentSignIn")]  //works // change to DepStu
         [Authorize]
         public async Task<ActionResult<DepartmentStudentAllInfoVM>> StudentSignIn()
         {
-            var depStu = await _context.DepartmentStudents.Include(x => x.Student).FirstOrDefaultAsync(x => x.Student.UserId == User.Identity.Name);
+            var depStu = await _context.DepartmentStudents.Where(x => !x.DeletedAt.HasValue).Include(x => x.Student).FirstOrDefaultAsync(x => x.Student.UserId == User.Identity.Name);
             if (depStu == null)
                 return NotFound("No student with this id");
             return Ok(_mapper.Map<DepartmentStudentAllInfoVM>(depStu));
@@ -48,7 +48,7 @@ namespace UniversitySystem.Controllers
         [Authorize(Roles = "Manager,Teacher")]
         public async Task<ActionResult<List<StudentVM>>> GetStudntByName(string StdnNm)
         {
-            var stu = await _context.DepartmentStudents.ProjectTo<DepartmentStudentAllInfoVM>(_mapper.ConfigurationProvider).Where(x => x.FirstName.Contains(StdnNm)).ToListAsync();
+            var stu = await _context.DepartmentStudents.Where(x => !x.DeletedAt.HasValue).ProjectTo<DepartmentStudentAllInfoVM>(_mapper.ConfigurationProvider).Where(x => x.FirstName.Contains(StdnNm)).ToListAsync();
             if (stu == null)
                 return NotFound("No student with this name");
             return Ok(stu);
@@ -58,7 +58,7 @@ namespace UniversitySystem.Controllers
         [Authorize(Roles = "Manager,Teacher")]
         public async Task<ActionResult<List<StudentVM>>> GetStudntById(int DepStuId)
         {
-            var stu = await _context.DepartmentStudents.ProjectTo<DepartmentStudentAllInfoVM>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == DepStuId);
+            var stu = await _context.DepartmentStudents.Where(x => !x.DeletedAt.HasValue).ProjectTo<DepartmentStudentAllInfoVM>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == DepStuId);
             if (stu == null)
                 return NotFound("No student with this name");
             return Ok(stu);
@@ -120,8 +120,8 @@ namespace UniversitySystem.Controllers
                                                                  int year,
                                                                  int supervisorId)
         {
-            var student = await _context.Students.FirstOrDefaultAsync(s => s.Id == StudentId);
-            var DepStu = await _context.DepartmentStudents.FirstOrDefaultAsync(ds => ds.StudentId == StudentId);
+            var student = await _context.Students.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(s => s.Id == StudentId);
+            var DepStu = await _context.DepartmentStudents.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(ds => ds.StudentId == StudentId);
 
             if (student == null)
                 return NotFound("Id was not found");
@@ -149,7 +149,7 @@ namespace UniversitySystem.Controllers
         [Authorize(Roles = "Manager")]
         public async Task<ActionResult<bool>> Delete(int StudentId)
         {
-            var c = await _context.Students.FirstOrDefaultAsync(c => c.Id == StudentId);
+            var c = await _context.Students.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(c => c.Id == StudentId);
             if (c == null)
                 return NotFound("ID not found");
             _context.Students.Remove(c);
@@ -161,7 +161,7 @@ namespace UniversitySystem.Controllers
         [Authorize(Roles = "Manager")]
         public async Task<ActionResult<int>> AddSeconedMajorStudent(DepartmentStudentPostVM departmentStudentVM)
         {
-            var stu = await _context.Students.Include(dest => dest.DepartmentStudents).FirstOrDefaultAsync(x => x.Id == departmentStudentVM.StudentId);
+            var stu = await _context.Students.Where(x => !x.DeletedAt.HasValue).Include(dest => dest.DepartmentStudents).FirstOrDefaultAsync(x => x.Id == departmentStudentVM.StudentId);
             if (stu == null)
                 return NotFound("wrong id");
             if (stu.DepartmentStudents.Any(x => x.DepartmentId == departmentStudentVM.DepartmentId))
@@ -181,13 +181,13 @@ namespace UniversitySystem.Controllers
         public async Task<ActionResult<bool>> PutBalance(int DepStudentId, 
                                                         double Amount)
         {
-            var student = await _context.DepartmentStudents.FirstOrDefaultAsync(s => s.Id == DepStudentId);
+            var student = await _context.DepartmentStudents.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(s => s.Id == DepStudentId);
             if (student == null) return NotFound("no student with this id");
             student.Balance += Amount;
             
             await _context.SaveChangesAsync();
 
-            var pay = await _context.DepStuPayments.Where(x => x.DepStuId == DepStudentId && x.IsPayed == false).ToListAsync();
+            var pay = await _context.DepStuPayments.Where(x => !x.DeletedAt.HasValue).Where(x => x.DepStuId == DepStudentId && x.IsPayed == false).ToListAsync();
             
             List<int>? bills = new List<int>();
             foreach (var payPayment in pay)

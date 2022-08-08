@@ -39,8 +39,8 @@ namespace UniversitySystem.Controllers
             [FromQuery] string? search = null)
         {
             if (!string.IsNullOrEmpty(search))
-                return Ok(await _context.Departments.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<DepartmentVM>(_mapper.ConfigurationProvider).Where(c => c.Name.Contains(search)).ToListAsync());
-            return Ok(await _context.Departments.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<DepartmentVM>(_mapper.ConfigurationProvider).ToListAsync());
+                return Ok(await _context.Departments.Where(x => !x.DeletedAt.HasValue).Where(c => c.Name.Contains(search)).Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<DepartmentVM>(_mapper.ConfigurationProvider).ToListAsync());
+            return Ok(await _context.Departments.Where(x => !x.DeletedAt.HasValue).Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<DepartmentVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 
         [HttpPut] // works
@@ -48,7 +48,7 @@ namespace UniversitySystem.Controllers
             [FromBody] DepartmentVM departmentVM,
             [FromQuery] string? DepName = null)
         {
-            var dep = await _context.Departments.FirstOrDefaultAsync(dp => dp.Name.Contains(DepName));
+            var dep = await _context.Departments.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(dp => dp.Name.Contains(DepName));
             if (dep == null)
                 return BadRequest("no department with this name");
             
@@ -61,7 +61,7 @@ namespace UniversitySystem.Controllers
         public async Task<ActionResult<bool>> DltDep(            
             [FromQuery] string? DepName = null)
         {
-            var dep = await _context.Departments.FirstOrDefaultAsync(dp => dp.Name.Contains(DepName));
+            var dep = await _context.Departments.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(dp => dp.Name.Contains(DepName));
             if (dep == null)
                 return BadRequest("no department with this name");
             _context.Departments.Remove(dep);

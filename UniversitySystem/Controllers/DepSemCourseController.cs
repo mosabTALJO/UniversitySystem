@@ -34,20 +34,20 @@ namespace UniversitySystem.Controllers
             [FromQuery] string? guzBaharYaz = null)
         {
             if (!string.IsNullOrEmpty(search))
-                return Ok(await _context.DepartmentSemesterCourses.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).Where(c => c.Course.Contains(search)).ToListAsync());
+                return Ok(await _context.DepartmentSemesterCourses.Where(x => !x.DeletedAt.HasValue).Where(x => x.DepartmentId == DepId).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider).Where(c => c.Course.Contains(search)).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync());
             if (year != null && !string.IsNullOrEmpty(guzBaharYaz))
-                return Ok(await _context.DepartmentSemesterCourses.Skip((pageNumber - 1) * pageSize).Take(pageSize).Where(x => x.DepartmentId == DepId && x.Semester.Year == year && x.Semester.GuzBaharYaz == guzBaharYaz).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider).ToListAsync());
-            return Ok(await _context.DepartmentSemesterCourses.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).ToListAsync());
+                return Ok(await _context.DepartmentSemesterCourses.Where(x => !x.DeletedAt.HasValue).Where(x => x.DepartmentId == DepId && x.Semester.Year == year && x.Semester.GuzBaharYaz == guzBaharYaz).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync());
+            return Ok(await _context.DepartmentSemesterCourses.Where(x => !x.DeletedAt.HasValue).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync());
         }
 
         [HttpGet("{Id}")] //gets departments that opened a certain course //this seems unnecessary
         public async Task<ActionResult<List<DepartmentSemesterCourseVM>>> Get(int Id)
         {
-            var c = await _context.Courses.FirstOrDefaultAsync(c => c.Id == Id);
+            var c = await _context.Courses.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(c => c.Id == Id);
             if (c == null)
                 return NotFound("Id not found");
 
-            return Ok(_context.DepartmentSemesterCourses.Where(c => c.CourseId == Id).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider));
+            return Ok(_context.DepartmentSemesterCourses.Where(x => !x.DeletedAt.HasValue).Where(c => c.CourseId == Id).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider));
         }
 
         [Authorize(Roles = "Manager")]
@@ -57,7 +57,7 @@ namespace UniversitySystem.Controllers
             DepSemCourseVM.NumberOfStudents = 0;
             var DepSemCourse = _mapper.Map<DepartmentSemesterCourse>(DepSemCourseVM);
 
-            if(_context.DepartmentSemesterCourses.Any(x => x.CourseId == DepSemCourse.CourseId && x.DepartmentId == DepSemCourse.DepartmentId && x.EndDate != null))
+            if(_context.DepartmentSemesterCourses.Where(x => !x.DeletedAt.HasValue).Any(x => x.CourseId == DepSemCourse.CourseId && x.DepartmentId == DepSemCourse.DepartmentId && x.EndDate != null))
                 return BadRequest("this course is already open");
 
             await _context.DepartmentSemesterCourses.AddAsync(DepSemCourse);
@@ -69,7 +69,7 @@ namespace UniversitySystem.Controllers
         [HttpPut("{DepSemCourseId}")]
         public async Task<ActionResult<bool>> Put(int DepSemCourseId, [FromBody] DepartmentSemesterCoursePostVM DepSemCourseVM)
         {
-            var depSemCourse = await _context.DepartmentSemesterCourses.FirstOrDefaultAsync(dsm => dsm.Id == DepSemCourseId);
+            var depSemCourse = await _context.DepartmentSemesterCourses.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(dsm => dsm.Id == DepSemCourseId);
             if (depSemCourse == null)
                 return NotFound("Id not found");
 
@@ -85,7 +85,7 @@ namespace UniversitySystem.Controllers
         [HttpDelete("{DepSemCourseId}")]
         public async Task<ActionResult<bool>> Delete(int DepSemCourseId)
         {
-            var depSemCourse = await _context.DepartmentSemesterCourses.FirstOrDefaultAsync(dsm => dsm.Id == DepSemCourseId);
+            var depSemCourse = await _context.DepartmentSemesterCourses.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(dsm => dsm.Id == DepSemCourseId);
             if (depSemCourse == null)
                 return NotFound("Id not found");
 

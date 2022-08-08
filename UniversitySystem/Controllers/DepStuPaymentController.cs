@@ -29,8 +29,8 @@ namespace UniversitySystem.Controllers
 
             var record = _mapper.Map<DepStuPayment>(depStuPaymentVM);
             
-            var student = await _context.DepartmentStudents.FirstOrDefaultAsync(s => s.Id == StdId && s.IsActive == true);
-            var amount = await _context.SemesterAmounts.Include(sem => sem.Sem).FirstOrDefaultAsync(a => a.SemId == SemId && a.DepId == DepId);
+            var student = await _context.DepartmentStudents.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(s => s.Id == StdId && s.IsActive == true);
+            var amount = await _context.SemesterAmounts.Where(x => !x.DeletedAt.HasValue).Include(sem => sem.Sem).FirstOrDefaultAsync(a => a.SemId == SemId && a.DepId == DepId);
             var courses = await _context.TakenCourses.Include(dsc => dsc.DepSemCourse).Where(c => c.DepStudentId == StdId && c.Grade == null).ToListAsync();
             
             foreach (var course in courses)
@@ -66,14 +66,14 @@ namespace UniversitySystem.Controllers
         public async Task<ActionResult<List<DepStuPaymentVM>>> GetStudentPayment(int StdId = 0 )
         {
             if (StdId != 0)
-                return Ok(await _context.DepStuPayments.ProjectTo<DepStuPaymentVM>(_mapper.ConfigurationProvider).Where(c => c.DepStuId == StdId).ToListAsync());
-            return Ok(await _context.DepStuPayments.ProjectTo<DepStuPaymentVM>(_mapper.ConfigurationProvider).ToListAsync());
+                return Ok(await _context.DepStuPayments.Where(x => !x.DeletedAt.HasValue).ProjectTo<DepStuPaymentVM>(_mapper.ConfigurationProvider).Where(c => c.DepStuId == StdId).ToListAsync());
+            return Ok(await _context.DepStuPayments.Where(x => !x.DeletedAt.HasValue).ProjectTo<DepStuPaymentVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 
         [HttpDelete] // it works
         public async Task<ActionResult<bool>> DltPayment(int studId , int semId)
         {
-            var delt = await _context.DepStuPayments.FirstOrDefaultAsync(d => d.DepStuId == studId && d.SemAmntID == semId);
+            var delt = await _context.DepStuPayments.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(d => d.DepStuId == studId && d.SemAmntID == semId);
             if (delt == null) return NotFound("NO PAYMENT WITH THIS ID");
             _context.DepStuPayments.Remove(delt);
             await _context.SaveChangesAsync();
@@ -83,8 +83,8 @@ namespace UniversitySystem.Controllers
         [HttpPut]
         public async Task<ActionResult<bool>> IsPiad(int DepstudId, int semId )// add a discount => "u can add it as a double between 0 and 100 then divaid ie on 100" <==
         {
-            var stu = await _context.DepStuPayments.FirstOrDefaultAsync(d => d.DepStuId == DepstudId && d.SemAmntID == semId && d.IsPayed == false);
-            var depstu = await _context.DepartmentStudents.FirstOrDefaultAsync(ds => ds.Id == DepstudId);
+            var stu = await _context.DepStuPayments.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(d => d.DepStuId == DepstudId && d.SemAmntID == semId && d.IsPayed == false);
+            var depstu = await _context.DepartmentStudents.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(ds => ds.Id == DepstudId);
             
             if (stu == null) return NotFound("no not paid bills for this student with this id");
 
@@ -102,8 +102,8 @@ namespace UniversitySystem.Controllers
             int ttlcrdt = 0;
             var record = _mapper.Map<DepStuPayment>(depStuPaymentVM);
 
-            var student = await _context.DepartmentStudents.FirstOrDefaultAsync(s => s.StudentId == StdId && s.IsActive == true);
-            var amount = await _context.SemesterAmounts.Include(sem => sem.Sem).FirstOrDefaultAsync(a => a.SemId == SemId && a.DepId == DepId);
+            var student = await _context.DepartmentStudents.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(s => s.StudentId == StdId && s.IsActive == true);
+            var amount = await _context.SemesterAmounts.Where(x => !x.DeletedAt.HasValue).Include(sem => sem.Sem).FirstOrDefaultAsync(a => a.SemId == SemId && a.DepId == DepId);
             var courses = await _context.TakenCourses.Include(dsc => dsc.DepSemCourse).Where(c => c.DepStudentId == StdId && c.Grade == null).ToListAsync();
 
             foreach (var course in courses)

@@ -58,15 +58,15 @@ namespace UniversitySystem.Controllers
             [FromQuery] int Dep = 0)
         {
             if (Dep != 0)
-                return Ok(await _context.SemesterAmounts.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterAmountVM>(_mapper.ConfigurationProvider).Where(c => c.SemId == Dep).ToListAsync());
-            return Ok(await _context.SemesterAmounts.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterAmountVM>(_mapper.ConfigurationProvider).ToListAsync());
+                return Ok(await _context.SemesterAmounts.Where(x => !x.DeletedAt.HasValue).Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterAmountVM>(_mapper.ConfigurationProvider).Where(c => c.SemId == Dep).ToListAsync());
+            return Ok(await _context.SemesterAmounts.Where(x => !x.DeletedAt.HasValue).Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterAmountVM>(_mapper.ConfigurationProvider).ToListAsync());
 
         }
 
         [HttpPut]
         public async Task<ActionResult<bool>> EditSemAmnt(int DepId , int SemId , SemesterAmountVM semesterAmountVM)
         {
-            var edtSemAmnt = _context.SemesterAmounts.FirstOrDefault(c => c.SemId == SemId && c.DepId == DepId);
+            var edtSemAmnt = _context.SemesterAmounts.Where(x => !x.DeletedAt.HasValue).FirstOrDefault(c => c.SemId == SemId && c.DepId == DepId);
             if (edtSemAmnt == null) return NotFound("There is no semester like this");
             edtSemAmnt.Price = semesterAmountVM.Price;
             await _context.SaveChangesAsync();
@@ -76,7 +76,7 @@ namespace UniversitySystem.Controllers
         [HttpDelete]
         public async Task<ActionResult<bool>> DltSemAmnt(int DepId, int SemId)
         {
-            var dltSemAmnt = await _context.SemesterAmounts.FirstOrDefaultAsync(sa => sa.SemId == SemId && sa.DepId == DepId );
+            var dltSemAmnt = await _context.SemesterAmounts.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(sa => sa.SemId == SemId && sa.DepId == DepId );
             if (dltSemAmnt == null) return NotFound("Nothing found");
             _context.SemesterAmounts.Remove(dltSemAmnt);
             await _context.SaveChangesAsync();

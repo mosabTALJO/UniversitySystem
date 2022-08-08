@@ -34,9 +34,9 @@ namespace UniversitySystem.Controllers
                 return NotFound("NO teacher with id like this");
 
             if (activeOnly)
-                return Ok(await _context.SemesterCourseTeachers.Where(sct => sct.TeacherId == teacherId && sct.EndDate > DateTime.Now).ProjectTo<SemesterCourseTeacherVM>(_mapper.ConfigurationProvider).ToListAsync());
+                return Ok(await _context.SemesterCourseTeachers.Where(x => !x.DeletedAt.HasValue).Where(sct => sct.TeacherId == teacherId && sct.EndDate > DateTime.Now).ProjectTo<SemesterCourseTeacherVM>(_mapper.ConfigurationProvider).ToListAsync());
 
-            return Ok(await _context.SemesterCourseTeachers.Where(sct => sct.TeacherId == teacherId).Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterCourseTeacherVM>(_mapper.ConfigurationProvider).ToListAsync());
+            return Ok(await _context.SemesterCourseTeachers.Where(x => !x.DeletedAt.HasValue).Where(sct => sct.TeacherId == teacherId).Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterCourseTeacherVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 
         //[HttpGet("onlyActives/{teacherId}")] // works//*********************the query above does this now************************************
@@ -54,7 +54,7 @@ namespace UniversitySystem.Controllers
         [HttpGet("teachers/{DepSemCourseId}")]
         public async Task<ActionResult<List<SemesterCourseTeacherVM>>> GetTeachersGivingACourse(int DepSemCourseId)
         {
-            var depSemCourse = await _context.DepartmentSemesterCourses.Include(x => x.SemesterCourseTeachers).FirstOrDefaultAsync(x => x.Id == DepSemCourseId);
+            var depSemCourse = await _context.DepartmentSemesterCourses.Where(x => !x.DeletedAt.HasValue).Include(x => x.SemesterCourseTeachers).FirstOrDefaultAsync(x => x.Id == DepSemCourseId);
             if (depSemCourse == null)
                 return NotFound("wrong id");
 
@@ -74,11 +74,11 @@ namespace UniversitySystem.Controllers
         [HttpPost("AddCourseToTeacher")] // it works
         public async Task<ActionResult<int>> AddCourseTeacher([FromBody] SemesterCourseTeacherPostVM SemesterCourseTeacherVM)
         {
-            var DepSemcourse = await _context.DepartmentSemesterCourses.Where(dsm => dsm.Id == SemesterCourseTeacherVM.DepSemCourseId).FirstOrDefaultAsync(x => x.EndDate > DateTime.Now);
+            var DepSemcourse = await _context.DepartmentSemesterCourses.Where(x => !x.DeletedAt.HasValue).Where(dsm => dsm.Id == SemesterCourseTeacherVM.DepSemCourseId).FirstOrDefaultAsync(x => x.EndDate > DateTime.Now);
             if (DepSemcourse == null)
                 return BadRequest("this course doesn't exist or its time has ended");
 
-            var temp = await _context.SemesterCourseTeachers.Where(x => x.TeacherId == SemesterCourseTeacherVM.TeacherId).FirstOrDefaultAsync(x => x.DepSemCourseId == DepSemcourse.Id && x.EndDate < DateTime.Now);
+            var temp = await _context.SemesterCourseTeachers.Where(x => !x.DeletedAt.HasValue).Where(x => x.TeacherId == SemesterCourseTeacherVM.TeacherId).FirstOrDefaultAsync(x => x.DepSemCourseId == DepSemcourse.Id && x.EndDate < DateTime.Now);
             if (temp != null)
                 return BadRequest("this teacher already teaches this course");
 
@@ -92,7 +92,7 @@ namespace UniversitySystem.Controllers
         [HttpPut("{Id}")] // it works
         public async Task<ActionResult<bool>> UpdateCourseTeacher(int Id, [FromBody] SemesterCourseTeacherPostVM semesterCourseTeacherVM)
         {
-            var EditCourse = await _context.SemesterCourseTeachers.FirstOrDefaultAsync(c => c.Id == Id);
+            var EditCourse = await _context.SemesterCourseTeachers.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(c => c.Id == Id);
             if (EditCourse == null) return NotFound("nothing found with this ID");
 
             EditCourse.StartDate = semesterCourseTeacherVM.StartDate;
@@ -107,7 +107,7 @@ namespace UniversitySystem.Controllers
         [HttpDelete("{Id}")]   //works
         public async Task<ActionResult<bool>> Delete(int Id)
         {
-            var DeleteCourse = await _context.SemesterCourseTeachers.FirstOrDefaultAsync(c => c.Id == Id);
+            var DeleteCourse = await _context.SemesterCourseTeachers.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(c => c.Id == Id);
             if (DeleteCourse == null) return NotFound("there is no courses with this ID ");
             _context.SemesterCourseTeachers.Remove(DeleteCourse);
             await _context.SaveChangesAsync();

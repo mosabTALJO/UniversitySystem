@@ -30,8 +30,8 @@ namespace UniversitySystem.Controllers
             [FromQuery] string? search = null)
         {
             if(!string.IsNullOrEmpty(search))
-                return Ok(await _context.Courses.Where(c => c.Name.Contains(search)).Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<CourseVM>(_mapper.ConfigurationProvider).ToListAsync());
-            return Ok(await _context.Courses.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<CourseVM>(_mapper.ConfigurationProvider).ToListAsync());
+                return Ok(await _context.Courses.Where(x => !x.DeletedAt.HasValue).Where(c => c.Name.Contains(search)).Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<CourseVM>(_mapper.ConfigurationProvider).ToListAsync());
+            return Ok(await _context.Courses.Where(x => !x.DeletedAt.HasValue).Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<CourseVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 
         [HttpPost]  //add new course
@@ -50,7 +50,7 @@ namespace UniversitySystem.Controllers
         [HttpPut("{Id}")] // update info of a course
         public async Task<ActionResult<bool>> Put(int Id, [FromBody] CourseVM courseVM) 
         {
-            var c = await _context.Courses.FirstOrDefaultAsync(c => c.Id == Id);
+            var c = await _context.Courses.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(c => c.Id == Id);
             if (c == null)
                 return NotFound("Id not found");
             courseVM.Id = Id;
@@ -63,7 +63,7 @@ namespace UniversitySystem.Controllers
         [HttpDelete("{Id}")]   // delete course
         public async Task<ActionResult<bool>> Delete(int Id)
         {
-            var c = await _context.Courses.FirstOrDefaultAsync(c => c.Id == Id);
+            var c = await _context.Courses.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(c => c.Id == Id);
             if (c == null)
                 return NotFound("Id not found");
 

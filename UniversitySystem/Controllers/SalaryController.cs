@@ -27,7 +27,7 @@ namespace UniversitySystem.Controllers
         [HttpGet("CurrentSalary/{EmployeeId}")]//works
         public async Task<ActionResult<SalaryVM>> GetSalary(int EmployeeId)// THIS GETS THE CURRENT SALARY
         {
-            var curntsalry = await _context.Salaries.ProjectTo<SalaryVM>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(slry => slry.EmployeeId == EmployeeId && slry.EndDate == null);
+            var curntsalry = await _context.Salaries.Where(x => !x.DeletedAt.HasValue).ProjectTo<SalaryVM>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(slry => slry.EmployeeId == EmployeeId && slry.EndDate == null);
             if (curntsalry == null) return NotFound("no corrent salary for this employee");
             return Ok(curntsalry);
         }
@@ -35,7 +35,7 @@ namespace UniversitySystem.Controllers
         [HttpGet("employeeOldSalaryRecords/{EmployeeId}")] // GET All SALAREIS 
         public async Task<ActionResult<List<SalaryVM>>> GetAllSalaries(int EmployeeId)
         {
-            var allsalrys = await _context.Salaries.Where(slry => slry.EmployeeId == EmployeeId).ToListAsync();
+            var allsalrys = await _context.Salaries.Where(x => !x.DeletedAt.HasValue).Where(slry => slry.EmployeeId == EmployeeId).ToListAsync();
             if (allsalrys == null) return NotFound("no salary for this employee");
 
             var allsalryVMlist = new List<SalaryVM>();
@@ -49,7 +49,7 @@ namespace UniversitySystem.Controllers
         [HttpPut("EndSalary")] //works //sets an end date for the salary
         public async Task<ActionResult<bool>> UpdateSalary(int EmployeeId)
         {
-            var salry = await _context.Salaries.FirstOrDefaultAsync(s => s.EmployeeId == EmployeeId && s.EndDate == null);
+            var salry = await _context.Salaries.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(s => s.EmployeeId == EmployeeId && s.EndDate == null);
             if (salry == null) return NotFound("No employee Found");
             
             salry.EndDate = DateTime.Today;
@@ -60,7 +60,7 @@ namespace UniversitySystem.Controllers
         [HttpDelete]
         public async Task<ActionResult<bool>> DeleteSlryRec(int slryID)
         {
-            var slry = await _context.Salaries.FirstOrDefaultAsync(s => s.Id == slryID && s.EndDate == null);
+            var slry = await _context.Salaries.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(s => s.Id == slryID && s.EndDate == null);
             if (slry == null) return NotFound("no record with this id");
 
             _context.Salaries.Remove(slry);
@@ -71,7 +71,7 @@ namespace UniversitySystem.Controllers
         [HttpPost("NewSalaryRecord")] // works  adds new salary record
         public async Task<ActionResult<int>> AddNewSalaryRecord(SalaryVM salaryVM)
         {
-            var emp = await _context.Employees.Include(e => e.Salaries).FirstOrDefaultAsync(e => e.Id == salaryVM.EmployeeId);
+            var emp = await _context.Employees.Where(x => !x.DeletedAt.HasValue).Include(e => e.Salaries).FirstOrDefaultAsync(e => e.Id == salaryVM.EmployeeId);
             if (emp == null) return NotFound("no emloyee with this id");
 
             var currentSalary = emp.Salaries.FirstOrDefault(e => e.EndDate == null);

@@ -40,8 +40,8 @@ namespace UniversitySystem.Controllers
             [FromQuery] int year = 0)
         {
             if (year != 0)
-                return Ok(await _context.Semesters.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterVM>(_mapper.ConfigurationProvider).Where(c => c.Year == year).ToListAsync());
-            return Ok(await _context.Semesters.Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterVM>(_mapper.ConfigurationProvider).ToListAsync());
+                return Ok(await _context.Semesters.Where(x => !x.DeletedAt.HasValue).Where(c => c.Year == year).Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterVM>(_mapper.ConfigurationProvider).ToListAsync());
+            return Ok(await _context.Semesters.Where(x => !x.DeletedAt.HasValue).Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 
         [HttpPut("{SemesterId}")] 
@@ -50,7 +50,7 @@ namespace UniversitySystem.Controllers
             int SemesterId)
         {
             semesterVM.Id = SemesterId;
-            var sem = await _context.Semesters.FirstOrDefaultAsync(dp => dp.Id == SemesterId);
+            var sem = await _context.Semesters.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(dp => dp.Id == SemesterId);
             if (sem == null)
                 return BadRequest("no semester like this");
 
@@ -64,7 +64,7 @@ namespace UniversitySystem.Controllers
         public async Task<ActionResult<bool>> DltSem(            
             [FromQuery] int? semId = null)
         {
-            var sem = await _context.Semesters.FirstOrDefaultAsync(dp => dp.Id == semId);
+            var sem = await _context.Semesters.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(dp => dp.Id == semId);
             if (sem == null)
                 return BadRequest("no department with this name");
             _context.Semesters.Remove(sem);

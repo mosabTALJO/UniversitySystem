@@ -31,7 +31,7 @@ namespace UniversitySystem.Controllers
         [HttpGet("EmployeeSignIn")]//works
         public async Task<ActionResult<List<EmployeeInfoVM>>> EmployeeSignIn()
         {
-            var c = await _context.Employees.FirstOrDefaultAsync(c => c.UserId == User.Identity.Name);
+            var c = await _context.Employees.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(c => c.UserId == User.Identity.Name);
             if (c == null)
                 return NotFound("There is no empolyee with this ID");
             return Ok(c);
@@ -41,7 +41,7 @@ namespace UniversitySystem.Controllers
         [HttpGet("{EmployeeId}")]//works
         public async Task<ActionResult<List<EmployeeInfoVM>>> Get(int EmployeeId)
         {
-            var c = await _context.Employees.FirstOrDefaultAsync(c => c.Id == EmployeeId);
+            var c = await _context.Employees.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(c => c.Id == EmployeeId);
             if (c == null)
                 return NotFound("There is no empolyee with this ID");
             return Ok(c);
@@ -122,7 +122,7 @@ namespace UniversitySystem.Controllers
         [HttpPut("{EmployeeId}")] // works
         public async Task<ActionResult<bool>> Put(int EmployeeId, [FromBody] EmployeeInfoVM EmployeeVM)
         {
-            var c = await _context.Employees.FirstOrDefaultAsync(c => c.Id == EmployeeId);
+            var c = await _context.Employees.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(c => c.Id == EmployeeId);
             if(c == null)
                 return NotFound("ID not found");
 
@@ -139,7 +139,7 @@ namespace UniversitySystem.Controllers
         [HttpDelete("{EmployeeId}")]
         public async Task<ActionResult<bool>> Delete(int EmployeeId)
         {
-            var c = await _context.Employees.FirstOrDefaultAsync(c => c.Id == EmployeeId);
+            var c = await _context.Employees.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(c => c.Id == EmployeeId);
             if (c == null)
                 return NotFound("ID not found");
             _context.Employees.Remove(c);
