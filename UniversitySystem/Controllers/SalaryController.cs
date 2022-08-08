@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversitySystem.Data;
@@ -8,9 +9,11 @@ using UniversitySystem.ViewModels.SalaryVMs;
 
 namespace UniversitySystem.Controllers
 {
+    ///////////////////////////////////////////////////////////// all works /////////////////////////////////////////////////////////////
     [Route("api/[controller]")]
     [ApiController]
-    ///////////////////////////////////////////////////////////// all works /////////////////////////////////////////////////////////////
+    [Authorize(Roles = "Manager")]
+
     public class SalaryController : Controller
     {
         private readonly DataContext _context;

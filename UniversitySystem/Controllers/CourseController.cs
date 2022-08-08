@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversitySystem.Data;
@@ -10,6 +11,7 @@ namespace UniversitySystem.Controllers
 {///////////////////////////////////////////////////////////// all works /////////////////////////////////////////////////////////////
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Manager")]
     public class CourseController : Controller
     {
         private readonly DataContext _context;
