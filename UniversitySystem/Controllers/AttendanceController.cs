@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversitySystem.Data;
@@ -19,6 +20,7 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
+        [Authorize]
         [HttpGet("{TakenCourseId}")]
         public async Task<ActionResult<AttendanceVM>> Get(int TakenCourseId)
         {
@@ -31,7 +33,8 @@ namespace UniversitySystem.Controllers
 
             return Ok(takenCourse.Attendances.ToList());
         }
-        
+
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpPost]
         public async Task<ActionResult<int>> Post(AttendanceVM attendanceVM)
         {
@@ -42,6 +45,7 @@ namespace UniversitySystem.Controllers
             return Ok(attendance.Id);
         }
 
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpPost("deviceCheck/{DepStuId}/{DepSemCourseId}")]
         public async Task<ActionResult> Post(int DepStuId, int DepSemCourseId)
         {

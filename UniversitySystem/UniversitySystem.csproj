@@ -24,6 +24,8 @@
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.4" />
+    <PackageReference Include="URF.Core.All" Version="3.0.0" />
+    <PackageReference Include="URF.Core.Services" Version="6.1.0" />
   </ItemGroup>
 
 </Project>

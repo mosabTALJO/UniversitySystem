@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using UniversitySystem.Data;
 using UniversitySystem.Models;
 using UniversitySystem.ViewModels.DepartmentStudentVMs;
@@ -26,8 +27,8 @@ namespace UniversitySystem.Controllers
 
         [HttpGet("{DepStuId}")]
         public async Task<ActionResult<List<TakenCourseVM>>> Get(
-            int DepStuId, 
-            [FromQuery] int? year = null, 
+            int DepStuId,
+            [FromQuery] int? year = null,
             [FromQuery] string? guzBaharYaz = null,
             [FromQuery] bool onlyShowActive = false)
         {
@@ -35,7 +36,7 @@ namespace UniversitySystem.Controllers
 
             var lst = _context.TakenCourses.Where(tc => tc.DepStudentId == DepStuId);
 
-            if(onlyShowActive)
+            if (onlyShowActive)
                 lst = lst.Where(tc => tc.Grade == null);
 
             if (year != null && guzBaharYaz != null)
@@ -79,7 +80,11 @@ namespace UniversitySystem.Controllers
             if (sem == null)
                 return BadRequest("course taking time hasn't started or has ended");
 
-            var depStu = await _context.DepartmentStudents.Include(ds => ds.TakenCourses).Include(ds => ds.Department).FirstOrDefaultAsync(s => s.Id == DepStuId);
+            DepartmentStudent? depStu;
+            if (User.HasClaim(ClaimTypes.Role, "Manager"))
+                depStu = await _context.DepartmentStudents.Include(ds => ds.TakenCourses).Include(ds => ds.Department).FirstOrDefaultAsync(s => s.Id == DepStuId);
+            else
+                depStu = await _context.DepartmentStudents.Include(ds => ds.TakenCourses).Include(ds => ds.Department).Include(ds => ds.Student).FirstOrDefaultAsync(s => s.Student.UserId == User.Identity.Name);
             if (depStu == null)
                 return NotFound("student not found");
 
@@ -121,6 +126,7 @@ namespace UniversitySystem.Controllers
             return Ok(takenCourse.Id);
         }
 
+        [Authorize(Roles = "Teacher")]
         [HttpPut("updateGrade/{TakenCourseId}")]
         public async Task<ActionResult<bool>> UpdateGrade(int TakenCourseId, double grade)
         {
@@ -133,6 +139,7 @@ namespace UniversitySystem.Controllers
             return Ok(true);
         }
 
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpDelete("{TakenCourseId}")]
         public async Task<ActionResult<bool>> Delete(int TakenCourseId)
         {
@@ -150,6 +157,7 @@ namespace UniversitySystem.Controllers
             return Ok(true);
         }
 
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpPut("approve/{DepStuId}")]
         public async Task<ActionResult<bool>> Approve(int DepStuId)
         {
@@ -164,7 +172,7 @@ namespace UniversitySystem.Controllers
                 return BadRequest("the payment isn't complete");
 
             var takenCourses = await _context.TakenCourses.Where(x => x.DepStudentId == DepStuId).ToListAsync();
-            foreach(var takenCourse in takenCourses)
+            foreach (var takenCourse in takenCourses)
             {
                 takenCourse.IsApproved = true;
             }
