@@ -1,6 +1,6 @@
 ﻿namespace UniversitySystem.Models
 {
-    public class TakenCourse
+    public class TakenCourse : TrackableEntity
     {
         public int Id { get; set; }
         public int DepSemCourseId { get; set; }

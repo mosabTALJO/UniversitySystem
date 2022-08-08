@@ -1,6 +1,6 @@
 ﻿namespace UniversitySystem.Models
 {
-    public class DepStuPayment
+    public class DepStuPayment : SoftDeleteEntity
     {
         public int Id { get; set; }
         public int DepStuId { get; set; }
@@ -9,7 +9,5 @@
         //public virtual SemesterAmount SemAmnt { get; set; }
         public double Total { get; set; }
         public bool IsPayed { get; set; }
-        public int AddedByEmployeeId { get; set; }
-        //public virtual Employee AddedByEmployee { get; set; }
     }
 }

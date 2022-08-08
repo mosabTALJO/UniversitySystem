@@ -1,6 +1,6 @@
 ﻿namespace UniversitySystem.Models
 {
-    public class Student
+    public class Student : SoftDeleteEntity
     {
         public int Id { get; set; }
         public string FirstName { get; set; }

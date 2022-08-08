@@ -1,6 +1,6 @@
 ﻿namespace UniversitySystem.Models
 {
-    public class SemesterCourseTeacher
+    public class SemesterCourseTeacher : SoftDeleteEntity
     {
         public int Id { get; set; }
         public int DepSemCourseId { get; set; }
@@ -12,7 +12,5 @@
         public int NumberOfStudents { get; set; }
         public int MaxStudents { get; set; }
         //public virtual ICollection<TakenCourse> TakenCourses { get; set; }
-        public int AddedByEmployeeId { get; set; }
-       // public virtual Employee AddedByEmployee { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace UniversitySystem.Models
 {
-    public class Employee
+    public class Employee : SoftDeleteEntity
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
@@ -17,9 +17,7 @@ namespace UniversitySystem.Models
         public virtual ICollection<ManagementStaff> ManagementStaffs { get; set; }
         public virtual ICollection<Teacher> Teachers { get; set; }
         public virtual ICollection<DepartmentStudent> DepartmentStudents { get; set; }
-        public int AddedByEmployeeId { get; set; }
         public string? UserId { get; set; }
         public virtual User User { get; set; }
-        //public virtual Employee AddedByEmployee { get; set; }
     }
 }

@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿global using UniversitySystem.Helpers;
 
 namespace UniversitySystem.Models
 {
-    public class Attendance
+    public class Attendance : TrackableEntity
     {
         public int Id { get; set; }
         public int TakenCourseId { get; set; }
@@ -12,7 +12,6 @@ namespace UniversitySystem.Models
         //public virtual DepartmentSemesterCourse DepSemCourse { get; set; }
         //public virtual Student Student { get; set; }
         public DateTime? Date { get; set; }
-        public int AddedByEmployeeId { get; set; }
         //public virtual Employee AddedByEmployee { get; set; }
     }
 }

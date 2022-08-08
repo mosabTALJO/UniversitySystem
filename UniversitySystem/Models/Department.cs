@@ -1,13 +1,11 @@
 ﻿namespace UniversitySystem.Models
 {
-    public class Department
+    public class Department : SoftDeleteEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public virtual ICollection<DepartmentSemesterCourse> Semesters { get; set; }
         public virtual ICollection<DepartmentStudent> Students { get; set; }
         public virtual ICollection<SemesterAmount> SemesterAmounts { get; set; }
-        public int AddedByEmployeeId { get; set; }
-        //public virtual Employee AddedByEmployee { get; set; }
     }
 }

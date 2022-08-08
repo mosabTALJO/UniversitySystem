@@ -1,6 +1,6 @@
 ﻿namespace UniversitySystem.Models
 {
-    public class DepartmentStudent
+    public class DepartmentStudent : SoftDeleteEntity
     {
         public int Id { get; set; }
         public int DepartmentId { get; set; }
@@ -16,8 +16,5 @@
         public double Balance { get; set; }
         public virtual ICollection<TakenCourse> TakenCourses { get; set; }
         public virtual ICollection<DepStuPayment> DepStuPayments { get; set; }
-        public int AddedByEmployeeId { get; set; }
-        //public virtual Employee AddedByEmployee { get; set; }
-        //public virtual ICollection<Attendance> Attendances { get; set; }
     }
 }
