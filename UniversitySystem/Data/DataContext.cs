@@ -1,14 +1,67 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using TrackableEntities.Common.Core;
+using UniversitySystem.Helpers;
 using UniversitySystem.Models;
 
 namespace UniversitySystem.Data
 {
     public class DataContext : IdentityDbContext<User>
     {
-        public DataContext(DbContextOptions<DataContext> options) : base(options)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public DataContext(DbContextOptions<DataContext> options, IHttpContextAccessor httpContextAccessor) : base(options)
         {
+            _httpContextAccessor = httpContextAccessor;
+        }
+        void UpdateAuditableFields()
+        {
+            var entries = ChangeTracker.Entries();
+            var now = DateTime.UtcNow;
+            var user = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "Anonymous" ;
+            
+            foreach(var entry in entries)
+            { 
+                if (entry.Entity is Helpers.ITrackable entity)
+                {
+                    if(entry.State == EntityState.Added)
+                    {
+                        entity.CreatedBy = user;
+                        entity.CreatedAt = now;
+                        entity.UpdatedBy = user;
+                        entity.UpdatedAt = now;
+                    }
+                    else if (entry.State == EntityState.Modified)
+                    {
+                        if (entity.UpdateCreatedAt)
+                            entity.CreatedAt = now;
+                        entity.UpdatedBy = user;
+                        entity.UpdatedAt = now;
+                    }
+                    else if(entry.State == EntityState.Deleted && entry.Entity is ISoftDelete sd)
+                    {
+                        if (!sd.CompleteRemove)
+                        {
+                            entry.State = EntityState.Modified;
+                            entity.UpdatedBy = user;
+                            sd.DeletedAt = now;
+                            sd.DeletedBy = user;
+                        }
+                    }
+                }
+            }
+        
+        }
+        public override int SaveChanges()
+        {
+            UpdateAuditableFields();
+            return base.SaveChanges();
+        }
 
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        {
+            UpdateAuditableFields();
+            return base.SaveChangesAsync(cancellationToken);
         }
         //protected override void OnModelCreating(ModelBuilder builder)
         //{
