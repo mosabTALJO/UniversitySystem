@@ -14,7 +14,7 @@ namespace UniversitySystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "Manager")]
+    [Authorize(Roles = "Manager")]
     public class EmployeeController : Controller
     {
         private readonly DataContext _context;
