@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using UniversitySystem.Data;
 using UniversitySystem.Models;
 using UniversitySystem.ViewModels;
@@ -38,6 +39,9 @@ namespace UniversitySystem.Controllers
         {
             courseVM.Id = 0;
             var course = _mapper.Map<Course>(courseVM);
+            //var emp = User.HasClaim(ClaimTypes.Role, "Manager");
+            //var empid = await _context.Employees.Include(x =>x.User).Where(c => c.User.Id == c.UserId).FirstOrDefaultAsync();
+            //course.AddedByEmployeeId = empid.Id;
             await _context.Courses.AddAsync(course);
             await _context.SaveChangesAsync();
             return Ok(course.Id);
