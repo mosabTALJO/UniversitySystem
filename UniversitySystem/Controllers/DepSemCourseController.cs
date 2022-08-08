@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversitySystem.Data;
@@ -49,6 +50,7 @@ namespace UniversitySystem.Controllers
             return Ok(_context.DepartmentSemesterCourses.Where(c => c.CourseId == Id).ProjectTo<DepartmentSemesterCourseVM>(_mapper.ConfigurationProvider));
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpPost("NewDepartmentSemesterCourse")]  
         public async Task<ActionResult<int>> Post([FromBody] DepartmentSemesterCoursePostVM DepSemCourseVM)
         {
@@ -63,6 +65,7 @@ namespace UniversitySystem.Controllers
             return Ok(DepSemCourse.Id);
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpPut("{DepSemCourseId}")]
         public async Task<ActionResult<bool>> Put(int DepSemCourseId, [FromBody] DepartmentSemesterCoursePostVM DepSemCourseVM)
         {
@@ -78,6 +81,7 @@ namespace UniversitySystem.Controllers
             return Ok(true);
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpDelete("{DepSemCourseId}")]
         public async Task<ActionResult<bool>> Delete(int DepSemCourseId)
         {

@@ -34,9 +34,9 @@ namespace UniversitySystem.Controllers
             return await _context.DepartmentStudents.ProjectTo<DepartmentStudentVM>(_mapper.ConfigurationProvider).Where(x => x.DepartmentId == DepId).ToListAsync();
         }
 
-        [HttpGet("byId")]  //works // change to DepStu
+        [HttpGet("StudentSignIn")]  //works // change to DepStu
         [Authorize]
-        public async Task<ActionResult<DepartmentStudentAllInfoVM>> GetStudnt()
+        public async Task<ActionResult<DepartmentStudentAllInfoVM>> StudentSignIn()
         {
             var depStu = await _context.DepartmentStudents.Include(x => x.Student).FirstOrDefaultAsync(x => x.Student.UserId == User.Identity.Name);
             if (depStu == null)

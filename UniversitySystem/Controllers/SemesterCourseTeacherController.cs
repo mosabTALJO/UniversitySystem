@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversitySystem.Data;
@@ -21,30 +22,35 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpGet("{teacherId}")] // works
         public async Task<ActionResult<List<SemesterCourseTeacherVM>>> SearchCourseTeacher(int teacherId,
                                                                                            [FromQuery] int pageNumber = 1,
-                                                                                           [FromQuery] int pageSize = 20)
+                                                                                           [FromQuery] int pageSize = 20,
+                                                                                           [FromQuery] bool activeOnly = false)
         {
             var teacher = await _context.Teachers.FirstOrDefaultAsync(c => c.Id == teacherId);
             if (teacher == null)
                 return NotFound("NO teacher with id like this");
 
-            var semCourTeacherVMList = await _context.SemesterCourseTeachers.Where(sct => sct.TeacherId == teacherId).Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterCourseTeacherVM>(_mapper.ConfigurationProvider).ToListAsync();
-            return Ok(semCourTeacherVMList);
+            if (activeOnly)
+                return Ok(await _context.SemesterCourseTeachers.Where(sct => sct.TeacherId == teacherId && sct.EndDate > DateTime.Now).ProjectTo<SemesterCourseTeacherVM>(_mapper.ConfigurationProvider).ToListAsync());
+
+            return Ok(await _context.SemesterCourseTeachers.Where(sct => sct.TeacherId == teacherId).Skip((pageNumber - 1) * pageSize).Take(pageSize).ProjectTo<SemesterCourseTeacherVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 
-        [HttpGet("onlyActives/{teacherId}")] // works
-        public async Task<ActionResult<List<SemesterCourseTeacherVM>>> SearchActiveCourseTeacher(int teacherId)
-        {
-            var teacher = await _context.Teachers.FirstOrDefaultAsync(c => c.Id == teacherId);
-            if (teacher == null)
-                return NotFound("NO teacher with id like this");
+        //[HttpGet("onlyActives/{teacherId}")] // works//*********************the query above does this now************************************
+        //public async Task<ActionResult<List<SemesterCourseTeacherVM>>> SearchActiveCourseTeacher(int teacherId)
+        //{
+        //    var teacher = await _context.Teachers.FirstOrDefaultAsync(c => c.Id == teacherId);
+        //    if (teacher == null)
+        //        return NotFound("NO teacher with id like this");
 
-            var semCourTeacherVMList = await _context.SemesterCourseTeachers.Where(sct => sct.TeacherId == teacherId && sct.EndDate > DateTime.Now).ProjectTo<SemesterCourseTeacherVM>(_mapper.ConfigurationProvider).ToListAsync();
-            return Ok(semCourTeacherVMList);
-        }
+        //    var semCourTeacherVMList = await _context.SemesterCourseTeachers.Where(sct => sct.TeacherId == teacherId && sct.EndDate > DateTime.Now).ProjectTo<SemesterCourseTeacherVM>(_mapper.ConfigurationProvider).ToListAsync();
+        //    return Ok(semCourTeacherVMList);
+        //}
 
+        [Authorize]
         [HttpGet("teachers/{DepSemCourseId}")]
         public async Task<ActionResult<List<SemesterCourseTeacherVM>>> GetTeachersGivingACourse(int DepSemCourseId)
         {
@@ -64,6 +70,7 @@ namespace UniversitySystem.Controllers
             return Ok(semCourTeachers);
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpPost("AddCourseToTeacher")] // it works
         public async Task<ActionResult<int>> AddCourseTeacher([FromBody] SemesterCourseTeacherPostVM SemesterCourseTeacherVM)
         {
@@ -81,6 +88,7 @@ namespace UniversitySystem.Controllers
             return Ok(NewCourseTeacher.Id);
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpPut("{Id}")] // it works
         public async Task<ActionResult<bool>> UpdateCourseTeacher(int Id, [FromBody] SemesterCourseTeacherPostVM semesterCourseTeacherVM)
         {
@@ -95,6 +103,7 @@ namespace UniversitySystem.Controllers
             return Ok(true);
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpDelete("{Id}")]   //works
         public async Task<ActionResult<bool>> Delete(int Id)
         {

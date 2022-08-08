@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversitySystem.Data;
@@ -23,17 +24,16 @@ namespace UniversitySystem.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{StuId}")]
+        [HttpGet("{DepStuId}")]
         public async Task<ActionResult<List<TakenCourseVM>>> Get(
-            int StuId, 
+            int DepStuId, 
             [FromQuery] int? year = null, 
             [FromQuery] string? guzBaharYaz = null,
             [FromQuery] bool onlyShowActive = false)
         {
-            var stu = await _context.Students.FirstOrDefaultAsync(s => s.Id == StuId);
-            var depStu = await _context.DepartmentStudents.FirstOrDefaultAsync(ds => ds.StudentId == StuId);
+            var depStu = await _context.DepartmentStudents.FirstOrDefaultAsync(ds => ds.Id == DepStuId);
 
-            var lst = _context.TakenCourses.Where(tc => tc.DepStudentId == StuId);
+            var lst = _context.TakenCourses.Where(tc => tc.DepStudentId == DepStuId);
 
             if(onlyShowActive)
                 lst = lst.Where(tc => tc.Grade == null);
@@ -48,6 +48,7 @@ namespace UniversitySystem.Controllers
             return Ok(await lst.ProjectTo<TakenCourseVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 
+        [Authorize(Roles = "Manager,Teacher")]
         [HttpGet("courseStudentsList/{DepSemCourseId}")]
         public async Task<ActionResult<List<TakenCourseVM>>> GetStudentsWhoTookACourse(int DepSemCourseId)
         {
@@ -58,6 +59,7 @@ namespace UniversitySystem.Controllers
             return Ok(await _context.TakenCourses.Where(x => x.DepSemCourseId == DepSemCourseId).ProjectTo<TakenCourseVM>(_mapper.ConfigurationProvider).ToListAsync());
         }
 
+        [Authorize(Roles = "Teacher")]
         [HttpGet("teacher/{SemCourTeacherId}")]  //teacher gets all students (taken courses) who took a course that he teaches
         public async Task<ActionResult<List<TakenCourseVM>>> Get(int SemCourTeacherId)
         {
@@ -69,6 +71,7 @@ namespace UniversitySystem.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Manager,Student")]
         [HttpPost("{DepStuId}/{SemCourseTeacherId}")]
         public async Task<ActionResult<int>> Post(int DepStuId, int SemCourseTeacherId)
         {
