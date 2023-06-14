@@ -53,7 +53,7 @@ namespace UniversitySystem.Controllers
                 return NotFound("No student with this name");
             return Ok(stu);
         }
-        
+
         [HttpGet("byId/{DepStuId}")] //works
         [Authorize(Roles = "Manager,Teacher")]
         public async Task<ActionResult<List<StudentVM>>> GetStudntById(int DepStuId)
@@ -64,21 +64,21 @@ namespace UniversitySystem.Controllers
             return Ok(stu);
         }
 
-        [HttpPost ("NewStudent")] //works // authentaction required      //add new student
-        [Authorize(Roles = "Manager")]
+        [HttpPost("NewStudent")] //works // authentaction required      //add new student
+        //[Authorize(Roles = "Manager")]
         public async Task<ActionResult<int>> Post(StudentPostVM studentVM, int DepId, bool year, int supervisorId, string email, string password)
         {
             studentVM.Id = 0;
             int strtyr;
             var student = _mapper.Map<Student>(studentVM);
             _context.Students.Add(student);
-            await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
             if (year == true)
                 strtyr = 1;
             else strtyr = 0;
             var depStu = new DepartmentStudent
             {
-                StudentId = student.Id,
+                Student = student,
                 DepartmentId = DepId,
                 Year = strtyr,
                 SupervisorId = supervisorId,
@@ -105,7 +105,7 @@ namespace UniversitySystem.Controllers
             {
                 await _userManager.AddToRoleAsync(newUser, newUser.UserType.ToString());
             }
-            student.UserId = newUser.Id;
+            student.User = newUser;
             await _context.SaveChangesAsync();
 
             return Ok(depStu.Id);
@@ -113,7 +113,7 @@ namespace UniversitySystem.Controllers
 
         [HttpPut("{StudentId}")]  //works // authentaction required   //Edit student info by id
         [Authorize(Roles = "Manager")]
-        public async Task<ActionResult<bool>> Put(int StudentId, [FromBody] StudentPostVM studentVM, 
+        public async Task<ActionResult<bool>> Put(int StudentId, [FromBody] StudentPostVM studentVM,
                                                                  int depId,
                                                                  DateTime graduationDate,
                                                                  bool isActive,
@@ -168,7 +168,7 @@ namespace UniversitySystem.Controllers
                 return BadRequest("this student is already enrolled in this department");
 
             var major = _mapper.Map<DepartmentStudent>(departmentStudentVM);
-            
+
             major.GraduationDate = null;
             _context.DepartmentStudents.Add(major);
             await _context.SaveChangesAsync();
@@ -176,27 +176,27 @@ namespace UniversitySystem.Controllers
 
         }
 
-        [HttpPut("AddBalance")] 
+        [HttpPut("AddBalance")]
         [Authorize(Roles = "Student")]
-        public async Task<ActionResult<bool>> PutBalance(int DepStudentId, 
+        public async Task<ActionResult<bool>> PutBalance(int DepStudentId,
                                                         double Amount)
         {
             var student = await _context.DepartmentStudents.Where(x => !x.DeletedAt.HasValue).FirstOrDefaultAsync(s => s.Id == DepStudentId);
             if (student == null) return NotFound("no student with this id");
             student.Balance += Amount;
-            
+
             await _context.SaveChangesAsync();
 
             var pay = await _context.DepStuPayments.Where(x => !x.DeletedAt.HasValue).Where(x => x.DepStuId == DepStudentId && x.IsPayed == false).ToListAsync();
-            
+
             List<int>? bills = new List<int>();
             foreach (var payPayment in pay)
-            {              
+            {
                 if (student.Balance >= payPayment.Total)
                 {
                     student.Balance -= payPayment.Total;
                     payPayment.IsPayed = true;
-                }    
+                }
                 else
                     bills.Add(payPayment.Id);
             }
@@ -205,15 +205,15 @@ namespace UniversitySystem.Controllers
             foreach (int bill in bills)
             {
                 notPiad += " " + bill.ToString();
-            }            
-            
+            }
+
             await _context.SaveChangesAsync();
-            
+
             if (pay.Count == 0)
                 notPiad = "No bills found your balance is : " + student.Balance;
-                return Ok(notPiad );
+            return Ok(notPiad);
             if (bills.Count > 0)
-                return Ok(notPiad);           
+                return Ok(notPiad);
             return Ok(student.Balance);
         }
     }

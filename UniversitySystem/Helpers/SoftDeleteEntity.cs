@@ -27,6 +27,6 @@ namespace UniversitySystem.Helpers
         public string UpdatedBy { get; set; }
         public DateTime? DeletedAt { get; set; }
         [MaxLength(40)]
-        public string DeletedBy { get; set; }
+        public string? DeletedBy { get; set; }
     }
 }

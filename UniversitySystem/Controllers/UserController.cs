@@ -16,14 +16,10 @@ namespace UniversitySystem.Controllers
     [ApiController]
     public class UserController : Controller
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
         private readonly IConfiguration _config;
         private readonly UserManager<User> _userManager;
-        public UserController(DataContext context, IMapper mapper, IConfiguration config, UserManager<User> userManager)
+        public UserController(IConfiguration config, UserManager<User> userManager)
         {
-            _context = context;
-            _mapper = mapper;
             _config = config;
             _userManager = userManager;
         }
@@ -31,7 +27,6 @@ namespace UniversitySystem.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(string username, string password)
         {
-            //var user = await _context.Users.FirstOrDefaultAsync(u => u.DisplayName == username && u.PasswordHash == password);
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username);
             if (user is null)
                 return BadRequest("Username or password is incorrect");
